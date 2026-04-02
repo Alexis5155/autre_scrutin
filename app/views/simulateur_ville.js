@@ -15,6 +15,13 @@ function extractVainqueurId(donnees) {
 const { createApp } = Vue;
 
 createApp({
+    mounted() {
+        const overlay = document.getElementById('loading-overlay');
+        if (!overlay) return;
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+        setTimeout(() => overlay.remove(), 450);
+    },
     data() {
         return {
             donnees: DATA_PHP,

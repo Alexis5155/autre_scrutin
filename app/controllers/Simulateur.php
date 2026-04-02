@@ -79,8 +79,15 @@ class Simulateur {
         }
 
         try {
-            // 1. Récupération et normalisation des données (Model)
-            $donneesVille = (new VilleResultats())->fetchParCodeInsee($codeInsee);
+            session_start();
+            $cacheKey = 'ville_' . $codeInsee;
+
+            if (isset($_SESSION[$cacheKey])) {
+                $donneesVille = $_SESSION[$cacheKey];
+            } else {
+                $donneesVille = (new VilleResultats())->fetchParCodeInsee($codeInsee);
+                $_SESSION[$cacheKey] = $donneesVille;
+            }
 
             // 2. Calcul de la réforme (Model)
             $calcul = (new Algorithme())->calculateReformSeats(

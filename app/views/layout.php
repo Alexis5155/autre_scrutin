@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Réforme Municipale 2026 | Une nouvelle démocratie locale</title>
+    <title>L'autre scrutin</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -186,10 +186,19 @@
             border-bottom: 1px solid #eee; transition: background 0.2s;
         }
         .search-result-item:last-child { border-bottom: none; }
-        .search-result-item:hover { background: var(--bg-color); color: var(--primary); }
+        .search-result-item:hover { background: var(--bg-color); color: var(--primary);
+        }
     </style>
 </head>
 <body>
+    <!-- Overlay de chargement — visible immédiatement -->
+    <div id="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="text-center">
+            <p class="fw-bold text-dark mb-1">Chargement en cours…</p>
+            <p class="text-muted small mb-0">Lecture des résultats pour <strong><?= htmlspecialchars($donneesVue['commune'] ?? 'la commune') ?></strong></p>
+        </div>
+    </div>
     <!-- Overlay de Recherche -->
     <div id="searchOverlay" class="search-overlay">
         <button class="btn-close-overlay" id="closeSearch"><i class="bi bi-x"></i></button>
@@ -226,7 +235,7 @@
 
         <nav class="navbar navbar-expand-lg navbar-light pt-4 fade-in-up">
             <div class="container">
-                <a class="navbar-brand fw-bold fs-4" href="<?= BASE_URL ?>">Démocratie<span style="color:var(--primary)">Locale</span></a>
+                <a class="navbar-brand fw-bold fs-4" href="<?= BASE_URL ?>">L'autre<span style="color:var(--primary)">Scrutin</span></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -247,7 +256,7 @@
         </main>
 
         <footer class="container text-center py-5 mt-5 fade-in-up">
-            <p class="text-muted">© 2026 - Simulateur de Réforme Municipale</p>
+            <p class="text-muted">© 2026 - Alexis Leleu</p>
         </footer>
     </div>
 

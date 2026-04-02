@@ -3,37 +3,36 @@ namespace app\models;
 
 class VilleResultats {
 
-    private string $urlApi = "https://tabular-api.data.gouv.fr/api/resources/";
-    private string $rid1erTour  = "4feeef01-24f7-4d5a-914f-8aa806f31ec2";
-    private string $rid2ndTour  = "6ff67a28-01bf-459e-beca-dd7aa8132dc1";
-    private string $ridCandidats = "b929c2a4-18ec-4e8b-bc37-2ff346a867cd";
+    // Chemins vers les CSV placés dans app/data/
+    private string $csvT1         = __DIR__ . '/../data/municipales_2026_t1_resultats.csv';
+    private string $csvT2         = __DIR__ . '/../data/municipales_2026_t2_resultats.csv';
+    private string $csvCandidats  = __DIR__ . '/../data/municipales_2026_t1_candidatures.csv';
 
     /**
-     * Point d'entrée principal. Retourne toutes les données normalisées
-     * pour une commune donnée, ou lève une \RuntimeException en cas d'erreur.
+     * Point d'entrée principal.
      */
-    public function fetchParCodeInsee(string $codeInsee): array {
-        $codeInsee = str_pad($codeInsee, 5, "0", STR_PAD_LEFT);
+    public function fetchParCodeInsee(string $codeInsee): array
+    {
+        $codeInsee = str_pad($codeInsee, 5, '0', STR_PAD_LEFT);
 
-        $rowT1           = $this->fetch1erTour($codeInsee);
-        $totalExprimes   = (int)($rowT1['Exprimés'] ?? 0);
+        $rowT1         = $this->lire1erTour($codeInsee);
+        $totalExprimes = (int)($rowT1['Exprimés'] ?? 0);
 
         if ($totalExprimes === 0) {
             throw new \RuntimeException("Aucun suffrage exprimé trouvé pour la commune $codeInsee.");
         }
 
-        $tetesDeListe = $this->fetchTetesDeListe($codeInsee);
+        $tetesDeListe = $this->lireTetesDeListe($codeInsee);
         $listes       = $this->extraireListes1erTour($rowT1, $totalExprimes, $tetesDeListe);
 
         $nomCommune  = $rowT1['Libellé commune'] ?? 'Commune inconnue';
         $totalSieges = array_sum(array_column($listes, 'sieges_reel'));
         $elu1erTour  = ($totalSieges > 0);
 
-        $vainqueurId  = null;
-        $perdantId    = null;
+        $vainqueurId = null;
+        $perdantId   = null;
 
         if ($elu1erTour) {
-            // Victoire au 1er tour : le vainqueur est celui qui a > 50%
             foreach ($listes as $id => $liste) {
                 if ($liste['score_1er_tour'] > 50) {
                     $vainqueurId = $id;
@@ -41,7 +40,6 @@ class VilleResultats {
                 }
             }
         } else {
-            // Besoin du 2nd tour
             [$listes, $vainqueurId, $perdantId, $totalSieges] =
                 $this->fusionner2ndTour($codeInsee, $listes);
         }
@@ -63,56 +61,115 @@ class VilleResultats {
     }
 
     // -------------------------------------------------------------------------
-    // Méthodes privées
+    // Lecture CSV
     // -------------------------------------------------------------------------
 
-    private function fetch1erTour(string $codeInsee): array {
-        $url  = $this->urlApi . $this->rid1erTour . "/data/?Code%20commune__exact=" . urlencode($codeInsee);
-        $json = $this->httpGet($url);
-        $data = json_decode($json, true);
+    private function lire1erTour(string $codeInsee): array
+    {
+        $row = $this->rechercherDansCSV($this->csvT1, 'Code commune', $codeInsee);
 
-        if (empty($data['data'])) {
+        if ($row === null) {
             throw new \RuntimeException(
                 "Résultats du 1er tour introuvables pour $codeInsee. " .
                 "Il s'agit peut-être d'une commune de moins de 1000 habitants."
             );
         }
-        return $data['data'][0];
+        return $row;
     }
 
-    private function fetchTetesDeListe(string $codeInsee): array {
-        $url  = $this->urlApi . $this->ridCandidats .
-                "/data/?Code%20circonscription__exact=" . urlencode($codeInsee) .
-                "&T%C3%AAte%20de%20liste__exact=true";
-        $json = $this->httpGet($url);
-        $data = json_decode($json, true);
-
+    private function lireTetesDeListe(string $codeInsee): array
+    {
         $tetes = [];
-        if (!empty($data['data'])) {
-            foreach ($data['data'] as $cand) {
-                $num = $cand['Numéro de panneau'] ?? null;
-                if ($num) {
-                    $tetes[$num] = trim(
-                        ($cand['Prénom sur le bulletin de vote'] ?? '') . ' ' .
-                        ($cand['Nom sur le bulletin de vote']    ?? '')
-                    );
-                }
-            }
+
+        $fh = fopen($this->csvCandidats, 'r');
+        if (!$fh) {
+            throw new \RuntimeException("Impossible d'ouvrir le fichier candidatures CSV.");
         }
+
+        // Lire l'en-tête
+        $headers = fgetcsv($fh, 0, ';');
+        $headers = array_map(fn($h) => trim($h, " \t\n\r\0\x0B\""), $headers);
+
+        $colCirco  = array_search('Code circonscription', $headers);
+        $colOrdre  = array_search('Ordre', $headers);
+        $colNum    = array_search('Numéro de panneau', $headers);
+        $colPrenom = array_search('Prénom sur le bulletin de vote', $headers);
+        $colNom    = array_search('Nom sur le bulletin de vote', $headers);
+
+        while (($row = fgetcsv($fh, 0, ';')) !== false) {
+            if (!isset($row[$colCirco])) continue;
+            $circo = str_pad(trim($row[$colCirco], " \""), 5, '0', STR_PAD_LEFT);
+            if ($circo !== $codeInsee) continue;
+
+            // Tête de liste = Ordre 1
+            if (trim($row[$colOrdre] ?? '') !== '1') continue;
+
+            $num = trim($row[$colNum] ?? '');
+            if ($num === '') continue;
+
+            $tetes[$num] = trim(
+                ($row[$colPrenom] ?? '') . ' ' . ($row[$colNom] ?? '')
+            );
+        }
+        fclose($fh);
+
         return $tetes;
     }
 
-    private function extraireListes1erTour(array $row, int $totalExprimes, array $tetes): array {
+    /**
+     * Recherche générique dans un CSV séparé par ";" — retourne la première ligne
+     * dont la colonne $colonneFiltre vaut $valeur.
+     */
+    private function rechercherDansCSV(string $chemin, string $colonneFiltre, string $valeur): ?array
+    {
+        $fh = fopen($chemin, 'r');
+        if (!$fh) {
+            throw new \RuntimeException("Impossible d'ouvrir le fichier CSV : $chemin");
+        }
+
+        $headers = fgetcsv($fh, 0, ';');
+        $headers = array_map(fn($h) => trim($h, " \t\n\r\0\x0B\""), $headers);
+
+        $colIndex = array_search($colonneFiltre, $headers);
+        if ($colIndex === false) {
+            fclose($fh);
+            throw new \RuntimeException("Colonne '$colonneFiltre' introuvable dans $chemin.");
+        }
+
+        while (($row = fgetcsv($fh, 0, ';')) !== false) {
+            if (!isset($row[$colIndex])) continue;
+            $cellule = str_pad(trim($row[$colIndex], " \""), 5, '0', STR_PAD_LEFT);
+            if ($cellule === $valeur) {
+                fclose($fh);
+                // Retourner un tableau associatif header => valeur
+                return array_combine($headers, array_pad($row, count($headers), ''));
+            }
+        }
+
+        fclose($fh);
+        return null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Extraction — logique identique à l'ancienne version
+    // -------------------------------------------------------------------------
+
+    private function extraireListes1erTour(array $row, int $totalExprimes, array $tetes): array
+    {
         $listes = [];
         for ($i = 1; $i <= 15; $i++) {
             $voixBrut = $row["Voix $i"] ?? null;
             if ($voixBrut === null || trim((string)$voixBrut) === '') break;
 
-            $voix       = (int)$voixBrut;
-            $num        = $row["Numéro de panneau $i"] ?? null;
-            $teteListe  = ($num && isset($tetes[$num])) ? $tetes[$num] : 'Candidat non renseigné';
-            $nomListe   = trim($row["Libellé de liste $i"] ?? '') ?: $teteListe;
-            $score      = round(($voix / $totalExprimes) * 100, 2);
+            $voix      = (int)$voixBrut;
+            $num       = trim($row["Numéro de panneau $i"] ?? '');
+            $teteListe = ($num !== '' && isset($tetes[$num]))
+                ? $tetes[$num]
+                : trim(($row["Prénom candidat $i"] ?? '') . ' ' . ($row["Nom candidat $i"] ?? ''));
+            if ($teteListe === '') $teteListe = 'Candidat non renseigné';
+
+            $nomListe = trim($row["Libellé de liste $i"] ?? '') ?: $teteListe;
+            $score    = $totalExprimes > 0 ? round(($voix / $totalExprimes) * 100, 2) : 0;
 
             $listes["L$i"] = [
                 'id'             => "L$i",
@@ -127,20 +184,14 @@ class VilleResultats {
         return $listes;
     }
 
-    /**
-     * Fusionne les données du 2nd tour dans le tableau des listes.
-     * Retourne [$listes, $vainqueurId, $perdantId, $totalSieges].
-     */
-    private function fusionner2ndTour(string $codeInsee, array $listes): array {
-        $url  = $this->urlApi . $this->rid2ndTour . "/data/?Code%20commune__exact=" . urlencode($codeInsee);
-        $json = $this->httpGet($url);
-        $data = json_decode($json, true);
+    private function fusionner2ndTour(string $codeInsee, array $listes): array
+    {
+        $row = $this->rechercherDansCSV($this->csvT2, 'Code commune', $codeInsee);
 
-        if (empty($data['data'])) {
+        if ($row === null) {
             throw new \RuntimeException("Résultats du 2nd tour introuvables pour $codeInsee.");
         }
 
-        $row         = $data['data'][0];
         $scoresT2    = [];
         $totalSieges = 0;
 
@@ -156,7 +207,6 @@ class VilleResultats {
 
         usort($scoresT2, fn($a, $b) => $b['voix'] <=> $a['voix']);
 
-        // Mise à jour des sièges réels dans les listes du 1er tour
         foreach ($scoresT2 as $resT2) {
             $found = false;
             foreach ($listes as &$liste) {
@@ -168,7 +218,6 @@ class VilleResultats {
             }
             unset($liste);
 
-            // Liste de fusion inconnue au 1er tour
             if (!$found) {
                 $newId = 'L' . (count($listes) + 1);
                 $listes[$newId] = [
@@ -189,39 +238,21 @@ class VilleResultats {
         return [$listes, $vainqueurId, $perdantId, $totalSieges];
     }
 
-    private function nomCorrespond(string $a, string $b): bool {
+    // -------------------------------------------------------------------------
+    // Utilitaires — inchangés
+    // -------------------------------------------------------------------------
+
+    private function nomCorrespond(string $a, string $b): bool
+    {
         $a = trim($a); $b = trim($b);
         return strcasecmp($a, $b) === 0 || stripos($b, $a) !== false;
     }
 
-    private function trouverIdParNom(array $listes, string $nom): ?string {
+    private function trouverIdParNom(array $listes, string $nom): ?string
+    {
         foreach ($listes as $id => $liste) {
             if ($this->nomCorrespond($liste['nom'], $nom)) return $id;
         }
         return null;
-    }
-
-    /**
-     * Requête HTTP GET robuste via cURL.
-     * Lève une \RuntimeException en cas d'échec réseau.
-     */
-    private function httpGet(string $url): string {
-        $ch = curl_init();
-        curl_setopt_array($ch, [
-            CURLOPT_URL            => $url,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_USERAGENT      => 'SimulateurReformeMunicipale/1.0',
-            CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_SSL_VERIFYPEER => true,   // ← CORRECTION SÉCURITÉ
-            CURLOPT_TIMEOUT        => 15,
-        ]);
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-
-        if ($httpCode !== 200 || !$response) {
-            throw new \RuntimeException("Erreur HTTP $httpCode lors de l'appel à : $url");
-        }
-        return $response;
     }
 }

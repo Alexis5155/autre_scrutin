@@ -1,3 +1,33 @@
+<div id="loading-overlay" style="
+    position:fixed; inset:0;
+    background:rgba(255,255,255,0.92);
+    backdrop-filter:blur(4px);
+    z-index:9999;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:1.5rem;
+    transition:opacity 0.4s ease;
+">
+    <div style="
+        width:56px; height:56px;
+        border:5px solid #e2e8f0;
+        border-top-color:#6366f1;
+        border-radius:50%;
+        animation:spin 0.8s linear infinite;
+    "></div>
+    <div class="text-center">
+        <p class="fw-bold text-dark mb-1">Chargement en cours…</p>
+        <p class="text-muted small mb-0">
+            Lecture des résultats pour <strong><?= htmlspecialchars($donneesVue['commune'] ?? '') ?></strong>
+        </p>
+    </div>
+</div>
+<style>
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
 <div class="container mt-5 pt-4" id="app-ville">
 
     <!-- En-tête -->
@@ -254,7 +284,7 @@
                                         </div>
                                         <div class="small transition-colors"
                                              :class="liste.id === vainqueurSimuleId ? 'text-white-50' : 'text-muted'"
-                                             :title="liste.nom" style="font-size: 0.8rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                                             :title="liste.nom" style="font-size: 0.8rem; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden;">
                                             {{ liste.nom }}
                                         </div>
                                     </div>
@@ -267,94 +297,215 @@
         </div>
     </div>
 
-    <!-- Explication pédagogique étape par étape -->
-    <div class="row fade-in-up mt-2">
+    <!-- Explication pédagogique — Timeline verticale -->
+    <div class="row fade-in-up mt-2 mb-5">
         <div class="col-12">
-            <h4 class="mb-4 text-center fw-bold"><i class="bi bi-mortarboard text-primary me-2"></i>Comment les sièges ont-ils été attribués ?</h4>
-            <div class="row g-4">
-                <!-- BLOC 1 : LA PROPORTIONNELLE -->
-                <div class="col-md-6">
-                    <div class="glass-card p-4 h-100 shadow-sm border-0 bg-white">
-                        <div class="d-flex align-items-center mb-4 border-bottom pb-3">
-                            <div class="bg-primary text-white rounded px-3 py-1 fw-bold fs-5 shadow-sm me-3">Étape 1</div>
-                            <h5 class="mb-0 fw-bold text-primary">La Proportionnelle</h5>
-                        </div>
-                        <p class="small text-muted mb-4">
-                            Fixée sur les résultats du 1er tour, la part proportionnelle représente 
-                            <strong>{{ explicationsSimules.primes.part_prop }} sièges</strong> 
-                            ({{ donnees.isPLM && donnees.elu1erTour ? '70' : (donnees.isPLM ? '60' : (donnees.elu1erTour ? '60' : '50')) }}% du conseil).
-                            <span v-if="explicationsSimules.seuil.eliminees.length > 0" class="text-danger d-block mt-1">
-                                <i class="bi bi-x-circle me-1"></i> Seules les listes ayant franchi 5% y participent.
-                            </span>
-                        </p>
-                        <div class="mb-4">
-                            <h6 class="fw-bold text-dark"><i class="bi bi-calculator me-2"></i>A. Le Quotient Électoral</h6>
-                            <p class="small text-muted mb-2">
-                                <em>(Suffrages "utiles" / Nombre de sièges à répartir)</em><br>
-                                Il fixe le coût d'un siège. Chaque liste reçoit un nombre de sièges égal au nombre de fois qu'elle a atteint ce quotient.
-                            </p>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span v-for="(sieges, nom) in explicationsSimules.quotient.attributions" :key="'quot_'+nom" class="badge bg-light text-dark border">
-                                    Liste {{ getLettreByNom(nom) }} : <strong>{{ sieges }} siège(s)</strong>
-                                </span>
-                            </div>
-                        </div>
-                        <div v-if="explicationsSimules.restes.sieges_restants > 0">
-                            <h6 class="fw-bold text-dark"><i class="bi bi-bar-chart-steps me-2"></i>B. La Plus Forte Moyenne</h6>
-                            <p class="small text-muted mb-2">
-                                Il restait <strong>{{ explicationsSimules.restes.sieges_restants }} siège(s)</strong> non pourvu(s). Ils sont attribués un par un à la liste ayant la moyenne la plus élevée <em>(Score / (Sièges déjà obtenus + 1))</em>.
-                            </p>
-                            <div class="d-flex flex-wrap gap-2">
-                                <span v-for="(sieges, nom) in explicationsSimules.restes.attributions" :key="'reste_'+nom" class="badge bg-secondary text-white">
-                                    Liste {{ getLettreByNom(nom) }} : <strong>+{{ sieges }}</strong>
-                                </span>
-                            </div>
-                        </div>
-                        <div v-else>
-                            <h6 class="fw-bold text-dark"><i class="bi bi-check-circle me-2"></i>B. La Plus Forte Moyenne</h6>
-                            <p class="small text-muted mb-0">Le quotient électoral est tombé juste, aucun reste à répartir.</p>
-                        </div>
-                    </div>
-                </div>
 
-                <!-- BLOC 2 : LES PRIMES -->
-                <div class="col-md-6">
-                    <div class="glass-card p-4 h-100 border-primary" style="border-width: 2px; background: rgba(248, 250, 252, 0.8);">
-                        <div class="d-flex align-items-center mb-4 border-bottom pb-3 border-primary border-opacity-25">
-                            <div class="bg-primary text-white rounded px-3 py-1 fw-bold fs-5 shadow-sm me-3">Étape 2</div>
-                            <h5 class="mb-0 fw-bold text-primary">Les Primes de Gouvernabilité</h5>
+            <div class="text-center mb-5">
+                <h4 class="fw-bold mb-1"><i class="bi bi-mortarboard text-primary me-2"></i>Comment les sièges ont-ils été attribués ?</h4>
+                <p class="text-muted small mb-0">Trois mécanismes distincts, appliqués successivement sur des assiettes différentes.</p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-9">
+
+                    <!-- ══════════════════════════════════
+                        ÉTAPE 1 : PROPORTIONNELLE
+                    ══════════════════════════════════ -->
+                    <div class="d-flex gap-4 mb-0">
+                        <!-- Colonne gauche : pastille + trait vertical -->
+                        <div class="d-flex flex-column align-items-center flex-shrink-0" style="width:48px;">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-primary text-white fw-bold shadow" style="width:48px;height:48px;font-size:1rem;z-index:1;">1</div>
+                            <div style="width:2px;flex-grow:1;background:linear-gradient(to bottom,#6366f1,#6366f155);min-height:20px;"></div>
                         </div>
-                        <p class="small text-muted mb-4">
-                            Une fois la proportionnelle distribuée, on attribue les sièges de prime selon l'issue de l'élection (au {{ donnees.elu1erTour ? '1er' : '2nd' }} tour).
-                        </p>
-                        <div class="mb-4 p-3 bg-white rounded border border-success border-opacity-25 shadow-sm">
-                            <h6 class="fw-bold text-success"><i class="bi bi-award-fill me-2"></i>Prime Majoritaire ({{ explicationsSimules.primes.txt_maj }})</h6>
-                            <p class="small text-muted border-start border-success ms-1 ps-2 mb-2">
-                                Réservée au vainqueur de l'élection pour garantir une majorité stable permettant la gestion de la commune.
-                            </p>
-                            <div class="fs-6">
-                                La <strong>Liste {{ getLettreByNom(explicationsSimules.distribution_primes.vainqueur.nom) }}</strong> 
-                                reçoit d'office <strong class="text-success">+{{ explicationsSimules.distribution_primes.vainqueur.sieges }} sièges</strong>.
+                        <!-- Contenu -->
+                        <div class="flex-grow-1 pb-4">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <h5 class="fw-bold text-primary mb-0">La répartition proportionnelle</h5>
+                                <span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25">{{ explicationsSimules.primes.part_prop }} sièges — {{ donnees.isPLM && estEluDesLe1erTour ? '70' : (donnees.isPLM ? '60' : (estEluDesLe1erTour ? '60' : '50')) }}% du conseil</span>
                             </div>
-                        </div>
-                        <div v-if="explicationsSimules.distribution_primes.perdant" class="p-3 bg-white rounded border border-info border-opacity-25 shadow-sm">
-                            <h6 class="fw-bold text-info-emphasis"><i class="bi bi-shield-fill-check me-2"></i>Prime Minoritaire ({{ explicationsSimules.primes.txt_min }})</h6>
-                            <p class="small text-muted border-start border-info ms-1 ps-2 mb-2">
-                                Réservée au vaincu du duel final. Elle consacre le statut de Chef de l'Opposition.
-                            </p>
-                            <div class="fs-6">
-                                La <strong>Liste {{ getLettreByNom(explicationsSimules.distribution_primes.perdant.nom) }}</strong> 
-                                reçoit d'office <strong class="text-info-emphasis">+{{ explicationsSimules.distribution_primes.perdant.sieges }} sièges</strong>.
+                            <!-- Assiette -->
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <i class="bi bi-database-fill text-primary opacity-50" style="font-size:0.8rem;"></i>
+                                <span class="text-muted" style="font-size:0.82rem;"><strong class="text-dark">Assiette :</strong> résultats du 1<sup>er</sup> tour — toutes les listes ayant obtenu ≥ 5%
+                                    <span v-if="explicationsSimules.seuil.eliminees.length > 0" class="text-danger ms-1">
+                                        ({{ explicationsSimules.seuil.eliminees.map(n => 'Liste '+getLettreByNom(n)).join(', ') }} éliminée(s))
+                                    </span>
+                                </span>
                             </div>
-                        </div>
-                        <div v-else class="p-3 bg-light rounded border border-secondary border-opacity-25" style="border-style: dashed !important;">
-                            <h6 class="fw-bold text-muted"><i class="bi bi-dash-circle me-2"></i>Pas de Prime Minoritaire</h6>
-                            <p class="small text-muted mb-0">
-                                L'élection ayant été remportée dès le 1er tour avec plus de 50% des voix, il n'y a pas de duel ni de finaliste. La prime minoritaire n'est donc pas attribuée. 
-                                <strong>Ses sièges ont été reversés d'office à la part proportionnelle.</strong>
-                            </p>
+
+                            <div class="row g-3">
+                                <!-- Sous-étape A : Quotient -->
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 h-100" style="background:#f0f4ff; border:1px solid #c7d2fe;">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span class="badge bg-primary rounded-pill" style="font-size:0.7rem;">A</span>
+                                            <span class="fw-bold text-dark" style="font-size:0.88rem;"><i class="bi bi-calculator me-1 text-primary"></i>Quotient Électoral</span>
+                                        </div>
+                                        <p class="text-muted mb-3" style="font-size:0.78rem;"><em>Suffrages utiles ÷ sièges à répartir.</em> Chaque liste reçoit autant de sièges qu'elle a atteint ce quotient.</p>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <div v-for="(sieges, nom) in explicationsSimules.quotient.attributions" :key="'qa_'+nom"
+                                                class="d-flex align-items-center gap-2 px-2 py-1 rounded-3 bg-white shadow-sm">
+                                                <span class="badge rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0"
+                                                    :style="{backgroundColor: getCouleurByNom(nom), width:'24px', height:'24px', fontSize:'0.7rem'}">{{ getLettreByNom(nom) }}</span>
+                                                <span style="font-size:0.82rem;">→ <strong>{{ sieges }}</strong> siège(s)</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Sous-étape B : PFM -->
+                                <div class="col-md-6">
+                                    <div class="p-3 rounded-4 h-100" :style="explicationsSimules.restes.sieges_restants > 0 ? 'background:#f0fff4;border:1px solid #bbf7d0;' : 'background:#f8fafc;border:1px solid #e2e8f0;'">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <span class="badge rounded-pill" :class="explicationsSimules.restes.sieges_restants > 0 ? 'bg-success' : 'bg-secondary'" style="font-size:0.7rem;">B</span>
+                                            <span class="fw-bold text-dark" style="font-size:0.88rem;">
+                                                <i class="bi me-1" :class="explicationsSimules.restes.sieges_restants > 0 ? 'bi-bar-chart-steps text-success' : 'bi-check-circle text-secondary'"></i>
+                                                Plus Forte Moyenne
+                                            </span>
+                                        </div>
+                                        <div v-if="explicationsSimules.restes.sieges_restants > 0">
+                                            <p class="text-muted mb-3" style="font-size:0.78rem;"><strong>{{ explicationsSimules.restes.sieges_restants }} siège(s)</strong> restant(s), attribués un par un à la liste avec la moyenne la plus haute <em>(Score ÷ (Sièges+1))</em>.</p>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <div v-for="(sieges, nom) in explicationsSimules.restes.attributions" :key="'ra_'+nom"
+                                                    class="d-flex align-items-center gap-2 px-2 py-1 rounded-3 bg-white shadow-sm">
+                                                    <span class="badge rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0"
+                                                        :style="{backgroundColor: getCouleurByNom(nom), width:'24px', height:'24px', fontSize:'0.7rem'}">{{ getLettreByNom(nom) }}</span>
+                                                    <span class="text-success fw-bold" style="font-size:0.82rem;">+{{ sieges }} siège(s)</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <p v-else class="text-muted mb-0" style="font-size:0.78rem;">Le quotient est tombé juste — aucun reste à répartir.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+
+                    <!-- ══════════════════════════════════
+                        ÉTAPE 2 : PRIME MAJORITAIRE
+                    ══════════════════════════════════ -->
+                    <div class="d-flex gap-4 mb-0">
+                        <div class="d-flex flex-column align-items-center flex-shrink-0" style="width:48px;">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-success text-white fw-bold shadow" style="width:48px;height:48px;font-size:1rem;z-index:1;">2</div>
+                            <div style="width:2px;flex-grow:1;background:linear-gradient(to bottom,#22c55e,#22c55e55);min-height:20px;"></div>
+                        </div>
+                        <div class="flex-grow-1 pb-4">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <h5 class="fw-bold text-success mb-0"><i class="bi bi-trophy-fill me-2"></i>Prime Majoritaire</h5>
+                                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25">{{ explicationsSimules.primes.txt_maj }}</span>
+                            </div>
+                            <!-- Assiette -->
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <i class="bi bi-database-fill text-success opacity-50" style="font-size:0.8rem;"></i>
+                                <span class="text-muted" style="font-size:0.82rem;">
+                                    <strong class="text-dark">Assiette :</strong>
+                                    <span v-if="estEluDesLe1erTour"> vainqueur du 1<sup>er</sup> tour (majorité absolue obtenue)</span>
+                                    <span v-else> vainqueur du duel au 2<sup>nd</sup> tour</span>
+                                </span>
+                            </div>
+                            <div class="p-3 rounded-4 d-inline-flex align-items-center gap-3 shadow-sm"
+                                :style="{background: getCouleurByNom(explicationsSimules.distribution_primes.vainqueur.nom)+'18', border: '1.5px solid '+getCouleurByNom(explicationsSimules.distribution_primes.vainqueur.nom)+'55'}">
+                                <span class="badge rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0"
+                                    :style="{backgroundColor: getCouleurByNom(explicationsSimules.distribution_primes.vainqueur.nom), width:'38px', height:'38px', fontSize:'0.9rem'}">
+                                    {{ getLettreByNom(explicationsSimules.distribution_primes.vainqueur.nom) }}
+                                </span>
+                                <div class="lh-sm">
+                                    <div class="fw-bold text-dark" style="font-size:0.88rem;">Liste {{ getLettreByNom(explicationsSimules.distribution_primes.vainqueur.nom) }}</div>
+                                    <div class="text-muted" style="font-size:0.75rem;" :title="explicationsSimules.distribution_primes.vainqueur.nom">{{ explicationsSimules.distribution_primes.vainqueur.nom }}</div>
+                                </div>
+                                <span class="badge bg-success text-white fs-5 ms-2 shadow-sm">+{{ explicationsSimules.distribution_primes.vainqueur.sieges }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════
+                        ÉTAPE 3 : PRIME MINORITAIRE
+                    ══════════════════════════════════ -->
+                    <div class="d-flex gap-4 mb-0">
+                        <div class="d-flex flex-column align-items-center flex-shrink-0" style="width:48px;">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle text-white fw-bold shadow"
+                                :class="explicationsSimules.distribution_primes.perdant ? 'bg-info' : 'bg-secondary bg-opacity-50'"
+                                style="width:48px;height:48px;font-size:1rem;z-index:1;">3</div>
+                            <div style="width:2px;flex-grow:1;min-height:20px;"
+                                :style="explicationsSimules.distribution_primes.perdant ? 'background:linear-gradient(to bottom,#06b6d4,#06b6d455)' : 'background:#e2e8f0'"></div>
+                        </div>
+                        <div class="flex-grow-1 pb-4">
+                            <div class="d-flex flex-wrap align-items-center gap-2 mb-1">
+                                <h5 class="fw-bold mb-0" :class="explicationsSimules.distribution_primes.perdant ? 'text-info-emphasis' : 'text-muted'">
+                                    <i class="bi bi-shield-fill-check me-2"></i>Prime Minoritaire
+                                </h5>
+                                <span class="badge border" :class="explicationsSimules.distribution_primes.perdant ? 'bg-info bg-opacity-10 text-info-emphasis border-info border-opacity-25' : 'bg-light text-muted border-secondary border-opacity-25'">
+                                    {{ explicationsSimules.primes.txt_min }}
+                                </span>
+                            </div>
+                            <!-- Assiette -->
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <i class="bi bi-database-fill opacity-50" :class="explicationsSimules.distribution_primes.perdant ? 'text-info' : 'text-secondary'" style="font-size:0.8rem;"></i>
+                                <span class="text-muted" style="font-size:0.82rem;">
+                                    <strong class="text-dark">Assiette :</strong>
+                                    <span v-if="explicationsSimules.distribution_primes.perdant"> perdant du duel au 2<sup>nd</sup> tour</span>
+                                    <span v-else class="text-danger"> aucune — élection au 1<sup>er</sup> tour, pas de duel, pas de perdant à récompenser</span>
+                                </span>
+                            </div>
+                            <!-- Perdant présent -->
+                            <div v-if="explicationsSimules.distribution_primes.perdant"
+                                class="p-3 rounded-4 d-inline-flex align-items-center gap-3 shadow-sm"
+                                :style="{background: getCouleurByNom(explicationsSimules.distribution_primes.perdant.nom)+'18', border: '1.5px solid '+getCouleurByNom(explicationsSimules.distribution_primes.perdant.nom)+'55'}">
+                                <span class="badge rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0"
+                                    :style="{backgroundColor: getCouleurByNom(explicationsSimules.distribution_primes.perdant.nom), width:'38px', height:'38px', fontSize:'0.9rem'}">
+                                    {{ getLettreByNom(explicationsSimules.distribution_primes.perdant.nom) }}
+                                </span>
+                                <div class="lh-sm">
+                                    <div class="fw-bold text-dark" style="font-size:0.88rem;">Liste {{ getLettreByNom(explicationsSimules.distribution_primes.perdant.nom) }}</div>
+                                    <div class="text-muted" style="font-size:0.75rem;" :title="explicationsSimules.distribution_primes.perdant.nom">{{ explicationsSimules.distribution_primes.perdant.nom }}</div>
+                                </div>
+                                <span class="badge bg-info text-white fs-5 ms-2 shadow-sm">+{{ explicationsSimules.distribution_primes.perdant.sieges }}</span>
+                            </div>
+                            <!-- Pas de perdant -->
+                            <div v-else class="p-3 rounded-4 d-inline-flex align-items-center gap-3" style="background:#f8fafc;border:1.5px dashed #94a3b8;">
+                                <i class="bi bi-arrow-left-right text-primary opacity-50 fs-4"></i>
+                                <p class="text-muted mb-0" style="font-size:0.82rem;">Ses <strong>{{ explicationsSimules.primes.part_prop - (donnees.isPLM ? Math.round(donnees.sieges*0.6) : Math.round(donnees.sieges*0.5)) }}</strong> sièges ont été reversés dans la part proportionnelle (étape 1), augmentant la représentativité globale.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ══════════════════════════════════
+                        RÉSULTAT FINAL
+                    ══════════════════════════════════ -->
+                    <div class="d-flex gap-4">
+                        <div class="d-flex flex-column align-items-center flex-shrink-0" style="width:48px;">
+                            <div class="d-flex align-items-center justify-content-center rounded-circle bg-success text-white shadow" style="width:48px;height:48px;font-size:1.1rem;z-index:1;">
+                                <i class="bi bi-check2-all"></i>
+                            </div>
+                        </div>
+                        <div class="flex-grow-1">
+                            <h5 class="fw-bold text-success mb-3">Résultat final</h5>
+                            <div class="d-flex flex-wrap gap-3">
+                                <div v-for="liste in listesReformeLegende" :key="'fin_'+liste.nom"
+                                    class="d-flex align-items-center gap-3 p-3 rounded-4 flex-fill"
+                                    style="min-width:200px; max-width:300px;"
+                                    :style="{background: getCouleurByNom(liste.nom)+'15', border: '1.5px solid '+getCouleurByNom(liste.nom)+'55'}">
+                                    <span class="badge rounded-circle d-flex align-items-center justify-content-center text-white fw-bold flex-shrink-0"
+                                        :style="{backgroundColor: getCouleurByNom(liste.nom), width:'36px', height:'36px', fontSize:'0.9rem'}">
+                                        {{ getLettreByNom(liste.nom) }}
+                                    </span>
+                                    <div class="flex-grow-1 lh-sm overflow-hidden">
+                                        <div class="fw-bold text-truncate text-dark" style="font-size:0.85rem;" :title="liste.nom">{{ liste.nom }}</div>
+                                        <div class="mt-1 d-flex flex-wrap gap-1" style="font-size:0.72rem;">
+                                            <span v-if="liste.siegesprop > 0" class="text-muted"><i class="bi bi-pie-chart me-1"></i>{{ liste.siegesprop }}</span>
+                                            <span v-if="liste.siegesprime > 0" class="text-success fw-bold"><i class="bi bi-trophy-fill me-1"></i>+{{ liste.siegesprime }}</span>
+                                            <span v-if="liste.siegesmin > 0" class="text-info-emphasis fw-bold"><i class="bi bi-shield-fill-check me-1"></i>+{{ liste.siegesmin }}</span>
+                                        </div>
+                                    </div>
+                                    <span class="badge fs-5 shadow-sm text-white flex-shrink-0"
+                                        :style="{backgroundColor: getCouleurByNom(liste.nom)}">
+                                        {{ liste.totalsieges }}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
