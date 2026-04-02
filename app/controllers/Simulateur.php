@@ -53,7 +53,7 @@ class Simulateur {
             }
 
             if (!$isFirstRoundWin) {
-                $winnerId   = $data['winner_2nd_tour']   ?? null;
+                $winnerId   = $data['winner_2nd_tour']    ?? null;
                 $runnerUpId = $data['runner_up_2nd_tour'] ?? null;
             }
 
@@ -71,15 +71,28 @@ class Simulateur {
     }
 
     /**
-     * Page résultat pour une ville donnée par son code INSEE.
+     * Endpoint AJAX — données complètes d'une ville par code INSEE (GET ?insee=XXXXX).
+     * Appelé par Vue.js au montage de la page simulateur_ville.
      */
-    public function ville(string $codeInsee): void {
+    public function data(): void {
+        ini_set('display_errors', 0);
+        error_reporting(0);
+        header('Content-Type: application/json; charset=utf-8');
+
+        $codeInsee = trim($_GET['insee'] ?? '');
+
         if (empty($codeInsee) || strlen($codeInsee) < 4) {
-            die("Code INSEE invalide.");
+            http_response_code(400);
+            echo json_encode(['error' => 'Code INSEE invalide.']);
+            exit;
         }
 
         try {
-            session_start();
+            // session_start() sécurisé : ne redémarre pas si déjà active
+            if (session_status() === PHP_SESSION_NONE) {
+                session_start();
+            }
+
             $cacheKey = 'ville_' . $codeInsee;
 
             if (isset($_SESSION[$cacheKey])) {
@@ -89,7 +102,6 @@ class Simulateur {
                 $_SESSION[$cacheKey] = $donneesVille;
             }
 
-            // 2. Calcul de la réforme (Model)
             $calcul = (new Algorithme())->calculateReformSeats(
                 $donneesVille['sieges'],
                 array_column($donneesVille['listes'], null, 'id'),
@@ -99,7 +111,6 @@ class Simulateur {
                 $donneesVille['elu1erTour']
             );
 
-            // 3. Génération des messages d'analyse (Service)
             $messagesAnalyse = (new AnalyseService())->analyser(
                 $donneesVille['listes'],
                 array_values($calcul['resultats']),
@@ -107,9 +118,7 @@ class Simulateur {
                 $donneesVille['elu1erTour']
             );
 
-            // 4. Préparation du tableau de données pour la vue
-            // Clés normalisées, stables, documentées — la vue ne normalise plus rien.
-            $donneesVue = [
+            echo json_encode([
                 'commune'          => $donneesVille['commune'],
                 'code_insee'       => $donneesVille['code_insee'],
                 'sieges'           => $donneesVille['sieges'],
@@ -118,18 +127,31 @@ class Simulateur {
                 'listesInitiales'  => $donneesVille['listes'],
                 'resultatsReforme' => array_values($calcul['resultats']),
                 'explications'     => $calcul['explications'],
-                'messagesAnalyse'  => $messagesAnalyse,   // ← généré en PHP, affiché tel quel
-            ];
-
-            // 5. Rendu de la vue
-            ob_start();
-            require_once __DIR__ . '/../views/simulateur_ville.php';
-            $content = ob_get_clean();
-            require_once __DIR__ . '/../views/layout.php';
+                'messagesAnalyse'  => $messagesAnalyse,
+            ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT);
+            exit;
 
         } catch (\RuntimeException $e) {
-            die("<p class='container mt-5 alert alert-danger'><strong>Erreur :</strong> "
-                . htmlspecialchars($e->getMessage()) . "</p>");
+            http_response_code(404);
+            echo json_encode(['error' => $e->getMessage()]);
+            exit;
         }
+    }
+
+    /**
+     * Page squelette pour une ville — rendu immédiat, sans données.
+     * Les données sont chargées côté client via fetch() vers data().
+     */
+    public function ville(string $codeInsee): void {
+        if (empty($codeInsee) || strlen($codeInsee) < 4) {
+            die("Code INSEE invalide.");
+        }
+
+        // $codeInsee doit être dans la portée locale pour que require_once y accède
+        // et l'injecte dans la balise <script> de simulateur_ville.php
+        ob_start();
+        require_once __DIR__ . '/../views/simulateur_ville.php';
+        $content = ob_get_clean();
+        require_once __DIR__ . '/../views/layout.php';
     }
 }

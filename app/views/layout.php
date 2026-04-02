@@ -191,14 +191,6 @@
     </style>
 </head>
 <body>
-    <!-- Overlay de chargement — visible immédiatement -->
-    <div id="loading-overlay">
-        <div class="loading-spinner"></div>
-        <div class="text-center">
-            <p class="fw-bold text-dark mb-1">Chargement en cours…</p>
-            <p class="text-muted small mb-0">Lecture des résultats pour <strong><?= htmlspecialchars($donneesVue['commune'] ?? 'la commune') ?></strong></p>
-        </div>
-    </div>
     <!-- Overlay de Recherche -->
     <div id="searchOverlay" class="search-overlay">
         <button class="btn-close-overlay" id="closeSearch"><i class="bi bi-x"></i></button>
