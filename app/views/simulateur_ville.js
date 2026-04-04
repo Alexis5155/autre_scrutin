@@ -14,24 +14,15 @@ function extractVainqueurId(donnees) {
     return liste ? liste.id : null;
 }
 
-// Fermeture du loader — opère sur des éléments HORS du mount Vue
 function fermerLoader() {
     console.log('fermerLoader appelé')
     const overlay = document.getElementById('loader-overlay');
     const content = document.getElementById('main-content');
-
     if (!overlay) return;
-
-    // Déclenche le fade-out organique
     overlay.classList.add('closing');
-
-    // Après la fin de l'animation (600ms), on retire le loader
-    // et on révèle le contenu avec son animation d'entrée
     setTimeout(() => {
         overlay.style.display = 'none';
-        if (content) {
-            content.classList.add('revealed');
-        }
+        if (content) content.classList.add('revealed');
     }, 600);
 }
 
@@ -61,9 +52,7 @@ createApp({
             .then(r => r.json())
             .then(data => {
                 if (data.error) {
-                    this.erreur      = data.error;
-                    this.chargement  = false;
-                    fermerLoader();
+                    window.location.href = BASE_URL + 'erreur?code=400&msg=' + encodeURIComponent(data.error);
                     return;
                 }
 
@@ -85,26 +74,12 @@ createApp({
                     const cr = this.listesCompleteReforme.map(r => this.getCouleurByNom(r.nom));
                     this.dessinerHemicycleReforme(lr, dr, cr);
 
-                    // On lance le loader APRÈS que Vue a fini son rendu
                     fermerLoader();
-                    document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
-                        const existing = bootstrap.Popover.getInstance(el);
-                        if (existing) existing.dispose();
-                        new bootstrap.Popover(el, {
-                            container: 'body',
-                            html: true,
-                            trigger: 'hover',
-                            placement: 'top',
-                            title: el.getAttribute('data-bs-title'),
-                            content: el.getAttribute('data-bs-content'),
-                        });
-                    });
+                    this.initPopovers();
                 });
             })
             .catch(() => {
-                this.erreur     = 'Erreur réseau lors du chargement des données.';
-                this.chargement = false;
-                fermerLoader();
+                window.location.href = BASE_URL + 'erreur?code=500&msg=' + encodeURIComponent('Erreur réseau lors du chargement des données.');
             });
     },
 
@@ -113,7 +88,7 @@ createApp({
             if (!this.donnees.listesInitiales) return [];
             return this.donnees.listesInitiales
                 .filter(l => l.nom && l.nom.trim() !== '')
-                .filter(l => !l.is_fusion)   // ← AJOUT : exclure les listes de fusion
+                .filter(l => !l.is_fusion)
                 .sort((a, b) => b.score_1er_tour - a.score_1er_tour);
         },
         listesInitialesTrieesActuel() {
@@ -145,10 +120,10 @@ createApp({
                         nom:         liste.nom,
                         candidat:    liste.candidat,
                         nuance:      liste.nuance,
-                        totalsieges: r.totalsieges  || r.sieges         || r.total_sieges || 0,
-                        siegesprop:  r.siegesprop   || r.sieges_prop    || 0,
-                        siegesprime: r.siegesprime  || r.sieges_prime   || r.sieges_majo  || 0,
-                        siegesmin:   r.siegesmin    || r.sieges_min     || 0,
+                        totalsieges: r.totalsieges  || r.sieges        || r.total_sieges || 0,
+                        siegesprop:  r.siegesprop   || r.sieges_prop   || 0,
+                        siegesprime: r.siegesprime  || r.sieges_prime  || r.sieges_majo  || 0,
+                        siegesmin:   r.siegesmin    || r.sieges_min    || 0,
                     };
                 }
                 return { nom: liste.nom, candidat: liste.candidat, nuance: liste.nuance, totalsieges: 0, siegesprop: 0, siegesprime: 0, siegesmin: 0 };
@@ -251,9 +226,9 @@ createApp({
                     l.totalsieges > this.getSiegesReelsByNom(l.nom)
                 );
                 if (listesGagnantes.length > 0) {
-                    const nomsGagnants  = listesGagnantes.map(s => `<strong>${this.getLettreByNom(s.nom)} (${s.nom})</strong>`).join(" et ");
-                    const textePluriel  = listesGagnantes.length > 1 ? "Les listes" : "La liste";
-                    const verbePluriel  = listesGagnantes.length > 1 ? "bénéficient" : "bénéficie";
+                    const nomsGagnants = listesGagnantes.map(s => `<strong>${this.getLettreByNom(s.nom)} (${s.nom})</strong>`).join(" et ");
+                    const textePluriel = listesGagnantes.length > 1 ? "Les listes" : "La liste";
+                    const verbePluriel = listesGagnantes.length > 1 ? "bénéficient" : "bénéficie";
                     blocAutreHTML += `<div class="mb-2"><i class="bi bi-arrow-up-circle-fill text-success me-2"></i><strong>Fin du vote utile :</strong> ${textePluriel} ${nomsGagnants} ${verbePluriel} de sièges supplémentaires grâce à la prise en compte du score réalisé au 1er tour pour l'attribution de la part proportionnelle.</div>`;
                 }
                 const sauvees = this.listesCompleteReforme.filter(l =>
@@ -315,14 +290,61 @@ createApp({
         getNuanceStyle(nuance) {
             const n = nuance ? nuance.trim().toUpperCase() : '';
             let bgColor = '#f8f9fa', textColor = '#212529', borderColor = '#dee2e6';
-            if (n.includes('EXG') || n === 'LCOM' || n === 'LFI')                          { bgColor = '#ffe4e6'; textColor = '#be123c'; borderColor = '#fda4af'; }
-            else if (n === 'LSOC' || n === 'LDVG' || n === 'LUG')                          { bgColor = '#fce7f3'; textColor = '#be185d'; borderColor = '#f9a8d4'; }
-            else if (n.includes('ECO') || n === 'LVEC')                                     { bgColor = '#dcfce7'; textColor = '#15803d'; borderColor = '#86efac'; }
+            if (n.includes('EXG') || n === 'LCOM' || n === 'LFI')                               { bgColor = '#ffe4e6'; textColor = '#be123c'; borderColor = '#fda4af'; }
+            else if (n === 'LSOC' || n === 'LDVG' || n === 'LUG')                               { bgColor = '#fce7f3'; textColor = '#be185d'; borderColor = '#f9a8d4'; }
+            else if (n.includes('ECO') || n === 'LVEC')                                          { bgColor = '#dcfce7'; textColor = '#15803d'; borderColor = '#86efac'; }
             else if (n === 'LREM' || n === 'LMDM' || n === 'LDVC' || n === 'LUC' || n === 'LHOR') { bgColor = '#fef08a'; textColor = '#a16207'; borderColor = '#fde047'; }
-            else if (n === 'LLR'  || n === 'LDVD' || n === 'LUD'  || n === 'LUDI')         { bgColor = '#e0f2fe'; textColor = '#0369a1'; borderColor = '#7dd3fc'; }
-            else if (n === 'LRN'  || n === 'LEXD' || n === 'LREC' || n === 'LUXD')         { bgColor = '#eed3c8'; textColor = '#7c2d12'; borderColor = '#a48460'; }
-            else if (n.includes('DIV') || n.includes('REG'))                                { bgColor = '#f3f4f6'; textColor = '#4b5563'; borderColor = '#d1d5db'; }
+            else if (n === 'LLR'  || n === 'LDVD' || n === 'LUD'  || n === 'LUDI')              { bgColor = '#e0f2fe'; textColor = '#0369a1'; borderColor = '#7dd3fc'; }
+            else if (n === 'LRN'  || n === 'LEXD' || n === 'LREC' || n === 'LUXD')              { bgColor = '#eed3c8'; textColor = '#7c2d12'; borderColor = '#a48460'; }
+            else if (n.includes('DIV') || n.includes('REG'))                                     { bgColor = '#f3f4f6'; textColor = '#4b5563'; borderColor = '#d1d5db'; }
             return { backgroundColor: bgColor, color: textColor, borderColor: borderColor + ' !important' };
+        },
+        popoverFusion(liste) {
+            const fmt = (nom, nuance) => {
+                const s = this.getNuanceStyle(nuance);
+                const border = s.borderColor.replace(' !important', '');
+                return `<div style="font-family:inherit;font-size:0.78rem;margin-bottom:2px;">
+                    • ${nom}
+                    <span style="
+                        display:inline-block;
+                        padding:2px 7px;
+                        border-radius:4px;
+                        font-size:0.7rem;
+                        font-weight:600;
+                        font-family:inherit;
+                        background-color:${s.backgroundColor};
+                        color:${s.color};
+                        border:1px solid ${border};
+                        vertical-align:middle;
+                        line-height:1.4;
+                    ">${nuance}</span>
+                </div>`;
+            };
+            const lignes = [];
+            lignes.push(fmt(liste.nom, liste.nuance));  // ← nom T1, pas nom_T2
+            this.listeFusionnees(liste).forEach(f => lignes.push(fmt(f.nom, f.nuance)));
+            return lignes.join('');
+        },
+        initPopovers() {
+            document.querySelectorAll('[data-bs-toggle="popover"][data-liste-id]').forEach(el => {
+                const existing = bootstrap.Popover.getInstance(el);
+                if (existing) existing.dispose();
+
+                const listeId = el.getAttribute('data-liste-id');
+                const liste   = this.listesActuellesLegende.find(l => l.id === listeId);
+                console.log('contenu popover pour', liste.id, ':', this.popoverFusion(liste));
+                if (!liste) return;
+
+                new bootstrap.Popover(el, {
+                    container: 'body',
+                    html: true,
+                    trigger: 'hover',
+                    placement: 'top',
+                    sanitize: false,
+                    title: '<i class="bi bi-diagram-2-fill me-1"></i> Liste fusionnée',
+                    content: this.popoverFusion(liste),
+                });
+            });
         },
         async recalculerReforme() {
             const finalisteMedaileArgent = this.finalistes.find(f => f.id !== this.vainqueurSimuleId);
@@ -355,6 +377,7 @@ createApp({
                     const dr = this.listesCompleteReforme.map(r => r.totalsieges);
                     const cr = this.listesCompleteReforme.map(r => this.getCouleurByNom(r.nom));
                     this.dessinerHemicycleReforme(lr, dr, cr);
+                    this.initPopovers();
                 });
             } catch (e) {
                 console.error('Erreur Javascript de recalcul:', e);
@@ -416,17 +439,6 @@ createApp({
                 String(l.fusionnees_avec) === panneau
             );
         },
-        popoverFusion(liste) {
-            const lignes = [];
-            const fmt = (nom, nuance) => {
-                const s = this.getNuanceStyle(nuance);
-                return `<span class="d-block" style="font-size:0.78rem;">• ${nom} <span class="badge fw-normal ms-1" style="background-color:${s.backgroundColor};color:${s.color};border:1px solid ${s.borderColor.replace(' !important','')}">${nuance}</span></span>`;
-            };
-            lignes.push(fmt(liste.nom_T2 || liste.nom, liste.nuance));
-            this.listeFusionnees(liste).forEach(f => lignes.push(fmt(f.nom, f.nuance)));
-            return lignes.join('');
-        },
     }
 }).mount('#app-ville');
 console.log('Vue monté');
-

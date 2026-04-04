@@ -80,26 +80,17 @@
 .loader-dots span:nth-child(2) { animation-delay: .22s; }
 .loader-dots span:nth-child(3) { animation-delay: .44s; }
 
-.fusion-tooltip-trigger {
-    display: inline-flex;
-    align-items: center;
-    flex-shrink: 0;
-    cursor: default;
-    font-size: 0.8rem;
-    color: #6c757d;
+.popover {
+    font-family: inherit !important;
+    font-size: 0.875rem;
 }
-.fusion-tooltip {
-    display: none;
-    position: fixed;
-    z-index: 10000;
-    background: #fff;
-    border: 1px solid #dee2e6;
-    white-space: nowrap;
-    pointer-events: none;
-    min-width: 240px;
-    border-radius: 0.5rem;
-    padding: 0.5rem 0.75rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+.popover-body {
+    font-family: inherit !important;
+}
+.popover-header {
+    font-family: inherit !important;
+    font-size: 0.82rem;
+    font-weight: 600;
 }
 
 /* ── Contenu principal ────────────────────────── */
@@ -204,30 +195,19 @@
                                 'bg-white': index !== 0 && liste.id !== 'autres',
                                 'bg-light opacity-75': liste.id === 'autres'
                             }"
-                            style="min-width:0; overflow:hidden;">
+                            style="min-width:0;">
 
+                            <!-- puce couleur -->
                             <span class="d-inline-block rounded-circle me-2 flex-shrink-0"
                                 :style="{width:'12px', height:'12px', backgroundColor: liste.couleur}"></span>
 
+                            <!-- zone texte : flex-grow + min-w-0 pour truncate -->
                             <div style="flex:1 1 0; min-width:0; overflow:hidden;" class="lh-sm">
-                                <div style="display:flex; align-items:center; min-width:0; overflow:hidden;">
-                                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1 1 0; font-size:0.9rem;"
-                                        class="fw-bold"
-                                        :class="liste.id === 'autres' ? 'text-muted' : 'text-dark'"
-                                        :title="liste.nom_T2 || liste.nom">
-                                        {{ liste.nom_T2 || liste.nom }}
-                                    </span>
-                                    <span v-if="listeFusionnees(liste).length > 0"
-                                        class="text-muted ms-1"
-                                        style="flex-shrink:0; cursor:default; font-size:0.8rem; line-height:1;"
-                                        data-bs-toggle="popover"
-                                        data-bs-trigger="hover"
-                                        data-bs-placement="top"
-                                        data-bs-html="true"
-                                        :data-bs-title="'<i class=\'bi bi-node-plus-fill me-1\'></i> Fusion au 2nd tour'"
-                                        :data-bs-content="popoverFusion(liste)">
-                                        <i class="bi bi-node-plus-fill"></i>
-                                    </span>
+                                <div style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:0.9rem;"
+                                    class="fw-bold"
+                                    :class="liste.id === 'autres' ? 'text-muted' : 'text-dark'"
+                                    :title="liste.nom_T2 || liste.nom">
+                                    {{ liste.nom_T2 || liste.nom }}
                                 </div>
                                 <div v-if="liste.candidat && liste.id !== 'autres'"
                                     style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:0.72rem;"
@@ -236,7 +216,19 @@
                                 </div>
                             </div>
 
-                            <div class="ms-2 text-end" style="flex-shrink:0;">
+                            <!-- icône fusion : dans le flex principal → align-items-center du parent la centre -->
+                            <span v-if="listeFusionnees(liste).length > 0"
+                                class="text-muted mx-1"
+                                style="flex-shrink:0; cursor:default; font-size:1rem;"
+                                data-bs-toggle="popover"
+                                data-bs-trigger="hover"
+                                data-bs-placement="top"
+                                :data-liste-id="liste.id">
+                                <i class="bi bi-diagram-2-fill"></i>
+                            </span>
+
+                            <!-- badge sièges -->
+                            <div class="ms-1 text-end" style="flex-shrink:0;">
                                 <span class="badge rounded-pill fs-6"
                                     :class="index === 0 && liste.sieges_reel > 0 ? 'bg-warning text-dark' : 'bg-secondary'">
                                     {{ liste.sieges_reel }}

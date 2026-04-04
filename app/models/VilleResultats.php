@@ -67,9 +67,8 @@ class VilleResultats {
         $row = $this->rechercherDansCSV($this->csvT1, 'Code commune', $codeInsee);
         if ($row === null) {
             throw new \RuntimeException(
-                "Résultats du 1er tour introuvables pour $codeInsee. " .
-                "Il s'agit peut-être d'une commune de moins de 1000 habitants."
-            );
+                "Résultats du 1er tour introuvables pour $codeInsee. Le code INSEE est peut-être incorrect ou il n'y a pas eu d'élections municipales dans cette commune en mars 2026."          
+                );
         }
         return $row;
     }
@@ -237,7 +236,7 @@ class VilleResultats {
                 'id'             => "L$i",
                 'nom'            => $nomListe,
                 'candidat'       => $teteListe,
-                'nuance'         => trim($row["Nuance liste $i"] ?? ''),
+                'nuance'         => trim($row["Nuance liste $i"] ?? 'LDIV'),
                 'score_1er_tour' => $score,
                 'voix'           => $voix,
                 'sieges_reel'    => (int)($row["Sièges au CM $i"] ?? 0),

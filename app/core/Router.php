@@ -2,51 +2,67 @@
 namespace app\Core;
 
 class Router {
-    // On définit le contrôleur et la méthode par défaut
     protected $controller = 'Home';
     protected $method = 'index';
     protected $params = [];
 
     public function __construct() {
-        // 1. On récupère et on découpe l'URL
         $url = $this->parseUrl();
 
-        // 2. On vérifie si le contrôleur demandé existe dans le dossier Controllers
-        if (isset($url[0])) {
-            $nomController = ucfirst(strtolower($url[0]));
-            if (file_exists(__DIR__ . '/../../app/controllers/' . $nomController . '.php')) {
-                $this->controller = $nomController;
-            }
-            unset($url[0]); // On retire le contrôleur du tableau de l'URL
+        // Aucune URL → accueil
+        if (empty($url) || $url === ['']) {
+            $this->controller = new \app\controllers\Home();
+            return;
         }
 
-        // 3. On instancie le contrôleur
+        // 2. Vérification du contrôleur
+        $nomController = ucfirst(strtolower($url[0]));
+        if (file_exists(__DIR__ . '/../../app/controllers/' . $nomController . '.php')) {
+            $this->controller = $nomController;
+            unset($url[0]);
+        } else {
+            // Contrôleur inconnu → 404 immédiat
+            $this->afficher404();
+            return;
+        }
+
+        // 3. Instanciation du contrôleur
         $classeController = '\\app\\controllers\\' . $this->controller;
         $this->controller = new $classeController();
 
-                // 4. On vérifie si une méthode est demandée dans l'URL
+        // 4. Vérification de la méthode
         if (isset($url[1])) {
             if (method_exists($this->controller, $url[1])) {
                 $this->method = $url[1];
+                unset($url[1]);
+            } else {
+                // Méthode inconnue → 404
+                $this->afficher404();
+                return;
             }
-            unset($url[1]);
         }
 
-        // 5. Les éléments restants deviennent les paramètres (ex: $url[2] devient l'ID de la ville)
+        // 5. Paramètres restants
         $this->params = $url ? array_values($url) : [];
     }
 
     public function run() {
-        // On exécute la méthode du contrôleur en lui passant les paramètres éventuels
         call_user_func_array([$this->controller, $this->method], $this->params);
     }
 
     private function parseUrl() {
-        // Si une URL est passée, on la nettoie et on la découpe par les "/"
         if (isset($_GET['url'])) {
             $url = filter_var(rtrim($_GET['url'], '/'), FILTER_SANITIZE_URL);
             return explode('/', $url);
         }
         return [];
+    }
+
+    private function afficher404(): void {
+        http_response_code(404);
+        $_GET['code'] = '404';
+        $this->controller = new \app\controllers\Erreur();
+        $this->method     = 'index';
+        $this->params     = [];
     }
 }

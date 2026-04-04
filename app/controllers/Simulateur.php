@@ -144,13 +144,10 @@ class Simulateur {
      */
     public function ville(string $codeInsee): void {
         if (empty($codeInsee) || strlen($codeInsee) < 4) {
-            die("Code INSEE invalide.");
+            header('Location: ' . BASE_URL . 'erreur?code=400&msg=' . urlencode('Le code INSEE fourni est invalide.'));
+            exit;
         }
-
-        // Sans cette ligne, $codeInsee n'est pas dans la portée du require
-        // et la vue reçoit une chaîne vide → fetch() part avec insee='' → rien ne s'affiche
-        $codeInsee = strtoupper(trim($codeInsee)); // normalise + reste disponible dans require
-
+        $codeInsee = strtoupper(trim($codeInsee));
         ob_start();
         require __DIR__ . '/../views/simulateur_ville.php';
         $content = ob_get_clean();
