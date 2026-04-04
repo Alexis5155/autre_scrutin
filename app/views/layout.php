@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Vue 3 + Chart.js — disponibles pour toutes les vues -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     
     <style>
         :root {
@@ -34,9 +38,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            /* On coupe les éléments qui déborderaient (comme le translate de l'animation) 
-               en bas de page pour ne pas créer de hauteur fantôme */
-            overflow: hidden; 
+            overflow: hidden;
         }
 
         main {

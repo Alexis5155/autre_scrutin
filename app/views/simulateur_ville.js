@@ -68,6 +68,7 @@ createApp({
                 }
 
                 this.donnees                 = data;
+                console.log('listes', JSON.stringify(data.listesInitiales, null, 2));
                 this.resultatsReformeSimules = data.resultatsReforme;
                 this.explicationsSimules     = data.explications;
                 this.vainqueurSimuleId       = extractVainqueurId(data);
@@ -100,6 +101,7 @@ createApp({
             if (!this.donnees.listesInitiales) return [];
             return this.donnees.listesInitiales
                 .filter(l => l.nom && l.nom.trim() !== '')
+                .filter(l => !l.is_fusion)   // ← AJOUT : exclure les listes de fusion
                 .sort((a, b) => b.score_1er_tour - a.score_1er_tour);
         },
         listesInitialesTrieesActuel() {

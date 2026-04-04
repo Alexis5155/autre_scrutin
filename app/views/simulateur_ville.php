@@ -574,8 +574,6 @@
 
 </div><!-- /#app-ville -->
 
-<script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     const BASE_URL   = <?= json_encode(BASE_URL,   JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
     const CODE_INSEE = <?= json_encode($codeInsee ?? '', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT) ?>;
