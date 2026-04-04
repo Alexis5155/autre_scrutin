@@ -346,6 +346,38 @@ createApp({
                 });
             });
         },
+        importerDansSimulateur() {
+            // Identifier le vrai vainqueur du 2nd tour depuis les explications
+            const nomVainqueur = this.explicationsSimules?.distribution_primes?.vainqueur?.nom ?? null;
+            const idVainqueur  = nomVainqueur
+                ? this.trouverIdParNom(this.donnees.listesInitiales, nomVainqueur)
+                : null;
+
+            // Identifier le vrai perdant du 2nd tour (runner-up)
+            const nomPerdant = this.explicationsSimules?.distribution_primes?.perdant?.nom ?? null;
+            const idPerdant  = nomPerdant
+                ? this.trouverIdParNom(this.donnees.listesInitiales, nomPerdant)
+                : null;
+
+            // Sérialiser toutes les listes non-fusionnées avec leurs données complètes
+            const listes = this.listesInitialesFiltrees.map(l => ({
+                id:    l.id,
+                nom:   l.nom,
+                voix:  l.voix ?? 0,
+                score: l.score_1er_tour ?? 0
+            }));
+
+            sessionStorage.setItem('simulateur_import', JSON.stringify({
+                sieges:            this.donnees.sieges,
+                isPLM:             this.donnees.isPLM  ?? false,
+                elu1erTour:        this.donnees.elu1erTour ?? false,
+                listes,
+                winner_id:         idVainqueur,
+                commune:           this.donnees.commune
+            }));
+
+            window.location.href = BASE_URL + 'simulateur/manuel';
+        },
         async recalculerReforme() {
             const finalisteMedaileArgent = this.finalistes.find(f => f.id !== this.vainqueurSimuleId);
             const runnerUpId = finalisteMedaileArgent?.id ?? null;

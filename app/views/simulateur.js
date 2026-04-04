@@ -8,19 +8,72 @@ createApp({
     data() {
         return {
             modeSaisie: 'voix',
+            villeImportee: null,
             parametres: { sieges: 39, isPLM: false },
             listes: [
-                { id: 'L1', valeurSaisie: 4871 },
-                { id: 'L2', valeurSaisie: 4294 },
-                { id: 'L3', valeurSaisie: 1732 },
-                { id: 'L4', valeurSaisie: 263 }
+                { id: 'L1', valeurSaisie: 0, nom: null, vainqueur2nd: false },
+                { id: 'L2', valeurSaisie: 0, nom: null, vainqueur2nd: false },
             ],
             COLORS,
-            nextId: 4,
+            nextId: 3,
             vainqueur2ndTour: null,
             resultats: null,
             drawerOpen: false
         };
+    },
+
+    // ══ ICI au bon niveau, PAS dans methods ══
+    mounted() {
+        const raw = sessionStorage.getItem('simulateur_import');
+        if (raw) {
+            try {
+                const imp = JSON.parse(raw);
+                sessionStorage.removeItem('simulateur_import');
+
+                this.parametres.sieges = imp.sieges ?? this.parametres.sieges;
+                this.parametres.isPLM  = imp.isPLM  ?? false;
+                this.modeSaisie        = 'voix';
+                this.villeImportee     = imp.commune ?? null;
+
+                let nextId = 1;
+                this.listes = imp.listes.map(l => ({
+                    id:           l.id ?? ('L' + nextId++),
+                    nom:          l.nom ?? null,
+                    valeurSaisie: l.voix ?? 0,
+                    vainqueur2nd: l.id === imp.winner_id
+                }));
+                this.nextId = nextId;
+
+                if (!imp.elu1erTour && imp.winner_id) {
+                    this.vainqueur2ndTour = imp.winner_id;
+                }
+
+                this.$nextTick(() => this.lancerSimulation());
+
+            } catch (e) {
+                console.error('Import simulateur : JSON invalide', e);
+            }
+        }
+
+        // Popover PLM
+        this.$nextTick(() => {
+            const btn = document.getElementById('plmInfoBtn');
+            if (btn) {
+                new bootstrap.Popover(btn, {
+                    container: 'body',
+                    html: true,
+                    sanitize: false,
+                    trigger: 'hover focus',
+                    placement: 'top',
+                    title: '<i class="bi bi-building me-1"></i> Mode Métropole (PLM)',
+                    content: `<div style="font-size:0.82rem;">
+                        Dans les communes soumises au scrutin <strong>Paris–Lyon–Marseille</strong>,
+                        la prime majoritaire est abaissée de <strong>40%</strong> à <strong>30%</strong>
+                        des sièges, laissant davantage de place à la représentation proportionnelle.
+                    </div>`
+                });
+            }
+        });
     },
 
     computed: {
@@ -44,10 +97,10 @@ createApp({
                     pct = ((Number(l.valeurSaisie) || 0) / this.totalVoix) * 100;
                 }
                 return {
-                    id: l.id,
-                    nom: 'Liste ' + this.getLettre(index),
+                    id:        l.id,
+                    nom:       this.getNom(index),
                     scoreReel: Math.round(pct * 100) / 100,
-                    couleur: COLORS[index % COLORS.length]
+                    couleur:   COLORS[index % COLORS.length]
                 };
             });
         },
@@ -62,27 +115,18 @@ createApp({
     },
 
     methods: {
-        mounted() {
-            this.$nextTick(() => {
-                const btn = document.getElementById('plmInfoBtn');
-                if (btn) {
-                    new bootstrap.Popover(btn, {
-                        container: 'body',
-                        html: true,
-                        sanitize: false,
-                        trigger: 'hover focus',
-                        placement: 'top',
-                        title: '<i class="bi bi-building me-1"></i> Mode Métropole (PLM)',
-                        content: `<div style="font-size:0.82rem;">
-                            Dans les communes soumises au scrutin <strong>Paris–Lyon–Marseille</strong>,
-                            la prime majoritaire est abaissée de <strong>40%</strong> à <strong>30%</strong>
-                            des sièges, laissant davantage de place à la représentation proportionnelle.
-                        </div>`
-                    });
-                }
-            });
+        getLettre(index) {
+            return String.fromCharCode(65 + index);
         },
-        getLettre(index) { return String.fromCharCode(65 + index); },
+        getNom(index) {
+            const liste = this.listes[index];
+            if (liste?.nom) return liste.nom;
+            return 'Liste ' + this.getLettre(index);
+        },
+        getNomById(id) {
+            const index = this.listes.findIndex(l => l.id === id);
+            return index !== -1 ? this.getNom(index) : '?';
+        },
         getLettreById(id) {
             const index = this.listes.findIndex(l => l.id === id);
             return index !== -1 ? this.getLettre(index) : '?';
@@ -91,18 +135,37 @@ createApp({
             const index = this.listes.findIndex(l => l.id === id);
             return index !== -1 ? COLORS[index % COLORS.length] : '#ccc';
         },
-        getLettreByName(name) { return name.replace('Liste ', ''); },
+        getIndexByNom(nom) {
+            return this.listes.findIndex((l, i) => this.getNom(i) === nom);
+        },
         ajouterListe() {
             if (this.listes.length >= 20) return;
-            this.listes.push({ id: 'L' + this.nextId++, valeurSaisie: 0 });
+            this.listes.push({ id: 'L' + this.nextId++, valeurSaisie: 0, nom: null, vainqueur2nd: false });
         },
         supprimerListe(index) {
             this.listes.splice(index, 1);
         },
+        reinitialiser() {
+            this.parametres      = { sieges: 39, isPLM: false };
+            this.modeSaisie      = 'voix';
+            this.listes          = [
+                { id: 'L1', valeurSaisie: 0, nom: null, vainqueur2nd: false },
+                { id: 'L2', valeurSaisie: 0, nom: null, vainqueur2nd: false },
+            ];
+            this.nextId          = 3;
+            this.vainqueur2ndTour = null;
+            this.resultats       = null;
+            this.villeImportee   = null;
+        },
         async lancerSimulation() {
             const listesPourPhp = {};
             this.listesAvecPourcentage.forEach(l => {
-                listesPourPhp[l.id] = { id: l.id, nom: l.nom, score_1er_tour: l.scoreReel, couleur: l.couleur };
+                listesPourPhp[l.id] = {
+                    id:             l.id,
+                    nom:            l.nom,
+                    score_1er_tour: l.scoreReel,
+                    couleur:        l.couleur
+                };
             });
 
             const runnerUpId = (!this.victoirePremierTour && this.vainqueur2ndTour)
@@ -110,9 +173,9 @@ createApp({
                 : null;
 
             const payload = {
-                sieges: this.parametres.sieges,
-                isPLM:  this.parametres.isPLM,
-                listes: listesPourPhp,
+                sieges:             this.parametres.sieges,
+                isPLM:              this.parametres.isPLM,
+                listes:             listesPourPhp,
                 winner_2nd_tour:    this.vainqueur2ndTour,
                 runner_up_2nd_tour: runnerUpId
             };
@@ -141,12 +204,11 @@ createApp({
         dessinerHemicycle() {
             const ctx = document.getElementById('hemicycleChart');
             if (!ctx) return;
-
             if (chartInstance) chartInstance.destroy();
 
-            const labels = this.resultats.map(r => r.nom);
+            const labels     = this.resultats.map(r => r.nom);
             const dataSieges = this.resultats.map(r => r.total_sieges);
-            const bgColors = this.resultats.map(r => r.couleur);
+            const bgColors   = this.resultats.map(r => r.couleur);
 
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',

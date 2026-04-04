@@ -47,6 +47,13 @@
                                     Mode PLM
                                 </span>
                             </p>
+                            <!-- Badge ville importée sous le sous-titre -->
+                            <p v-if="nomImporte" class="mb-0 mt-1">
+                                <span class="badge bg-success bg-opacity-10 text-success rounded-pill"
+                                      style="font-size:0.68rem;">
+                                    <i class="bi bi-geo-alt-fill me-1"></i>{{ nomImporte }}
+                                </span>
+                            </p>
                         </div>
                     </div>
                     <!-- Bouton modifier -->
@@ -69,14 +76,16 @@
                                 <div v-if="res.total_sieges > 0"
                                      class="d-flex align-items-center gap-3 p-3 rounded-3 bg-white border shadow-sm"
                                      :style="{'border-left': '4px solid ' + res.couleur}">
+                                    <!-- Avatar : toujours la lettre -->
                                     <span class="d-flex align-items-center justify-content-center text-white fw-bold rounded-circle flex-shrink-0"
                                           :style="{background: res.couleur, width:'38px', height:'38px', fontSize:'0.9rem'}">
-                                        {{ getLettreByName(res.nom) }}
+                                        {{ getLettre(getIndexByNom(res.nom)) }}
                                     </span>
                                     <div class="flex-grow-1 lh-sm overflow-hidden">
                                         <div class="d-flex align-items-baseline gap-2">
-                                            <span class="fw-bold text-dark" style="font-size:0.9rem;">Liste {{ getLettreByName(res.nom) }}</span>
-                                            <span class="text-muted" style="font-size:0.78rem;">{{ res.score }}%</span>
+                                            <!-- Nom : vrai nom si importé, sinon "Liste X" -->
+                                            <span class="fw-bold text-dark text-truncate" style="font-size:0.9rem; max-width:180px;">{{ res.nom }}</span>
+                                            <span class="text-muted flex-shrink-0" style="font-size:0.78rem;">{{ res.score }}%</span>
                                         </div>
                                         <div class="d-flex flex-wrap gap-2 mt-1">
                                             <span v-if="res.sieges_prop > 0" class="text-muted" style="font-size:0.72rem;">
@@ -137,6 +146,24 @@
         <!-- Contenu scrollable -->
         <div class="drawer-body">
 
+            <!-- Bandeau ville importée -->
+            <div v-if="villeImportee"
+                 class="d-flex align-items-center justify-content-between p-2 px-3 rounded-3 mb-4"
+                 style="background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #86efac;">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-geo-alt-fill text-success"></i>
+                    <div>
+                        <div class="fw-semibold text-success" style="font-size:0.82rem; line-height:1.2;">{{ villeImportee }}</div>
+                        <div class="text-muted" style="font-size:0.72rem;">Données importées</div>
+                    </div>
+                </div>
+                <button @click="reinitialiser"
+                        class="btn btn-sm fw-semibold"
+                        style="border-radius:8px; font-size:0.75rem; background:#fee2e2; color:#dc2626; border:1px solid #fca5a5;">
+                    <i class="bi bi-x-circle me-1"></i>Effacer
+                </button>
+            </div>
+
             <!-- Sièges + Switch -->
             <div class="d-flex align-items-end justify-content-between gap-3 mb-4">
                 <div style="flex: 0 0 auto;">
@@ -182,11 +209,17 @@
                 <transition-group name="liste-item" tag="div">
                     <div v-for="(liste, index) in listes" :key="liste.id"
                          class="d-flex align-items-center gap-2 mb-2 p-2 rounded-3 bg-white border shadow-sm">
+                        <!-- Avatar lettre -->
                         <span class="d-flex align-items-center justify-content-center text-white fw-bold rounded-circle flex-shrink-0"
                               :style="{background: COLORS[index % COLORS.length], width:'32px', height:'32px', fontSize:'0.85rem'}">
                             {{ getLettre(index) }}
                         </span>
                         <div class="flex-grow-1">
+                            <!-- Nom de la liste si importé -->
+                            <div v-if="liste.nom" class="text-truncate fw-semibold text-dark mb-1"
+                                 style="font-size:0.78rem; max-width:200px;">
+                                {{ liste.nom }}
+                            </div>
                             <div class="input-group input-group-sm">
                                 <input type="number" class="form-control text-end fw-bold"
                                        style="border-radius: 8px 0 0 8px;"
@@ -241,8 +274,11 @@
                                   :style="{background: getCouleurById(finaliste.id), width:'26px', height:'26px', fontSize:'0.75rem'}">
                                 {{ getLettreById(finaliste.id) }}
                             </span>
-                            <span class="fw-semibold small flex-grow-1">Liste {{ getLettreById(finaliste.id) }}</span>
-                            <span class="badge bg-white text-dark border fw-normal" style="font-size:0.75rem;">{{ finaliste.scoreReel }}%</span>
+                            <!-- Nom réel ou "Liste X" -->
+                            <span class="fw-semibold small flex-grow-1 text-truncate" style="max-width:160px;">
+                                {{ getNomById(finaliste.id) }}
+                            </span>
+                            <span class="badge bg-white text-dark border fw-normal flex-shrink-0" style="font-size:0.75rem;">{{ finaliste.scoreReel }}%</span>
                         </label>
                     </div>
                 </div>
@@ -252,7 +288,7 @@
             <div class="d-flex align-items-center justify-content-between p-2 px-3 rounded-3 bg-light border mb-4">
                 <div class="d-flex align-items-center gap-1">
                     <span class="small fw-semibold text-muted">Mode Métropole (PLM)</span>
-                    <button type="button" class="btn btn-link btn-sm p-0 text-muted"
+                    <button type="button" id="plmInfoBtn" class="btn btn-link btn-sm p-0 text-muted"
                             style="font-size:0.78rem; line-height:1; text-decoration:none;">
                         <i class="bi bi-info-circle"></i>
                     </button>
@@ -269,8 +305,14 @@
             </div>
         </div>
 
-        <!-- Footer drawer — bouton fixe en bas -->
+        <!-- Footer drawer -->
         <div class="drawer-footer">
+            <!-- Bouton Réinitialiser (toujours visible) -->
+            <button @click="reinitialiser"
+                    class="btn btn-light border w-100 fw-semibold mb-2"
+                    style="border-radius:12px; font-size:0.9rem; color:#64748b;">
+                <i class="bi bi-arrow-counterclockwise me-2"></i>Réinitialiser les paramètres
+            </button>
             <button @click="lancerSimulation"
                     class="btn btn-custom w-100 fw-semibold fs-5"
                     :disabled="!isCalculable || (!victoirePremierTour && !vainqueur2ndTour)">
@@ -304,9 +346,7 @@ html { overflow-y: scroll; }
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border-radius: 24px 0 0 24px;
 }
-.drawer--open {
-    transform: translateX(0);
-}
+.drawer--open { transform: translateX(0); }
 
 .drawer-header {
     display: flex;
@@ -316,13 +356,11 @@ html { overflow-y: scroll; }
     border-bottom: 1px solid #f1f5f9;
     flex-shrink: 0;
 }
-
 .drawer-body {
     flex: 1;
     overflow-y: auto;
     padding: 1.25rem 1.5rem;
 }
-
 .drawer-footer {
     padding: 1rem 1.5rem 1.5rem;
     border-top: 1px solid #f1f5f9;
@@ -340,10 +378,7 @@ html { overflow-y: scroll; }
     color: #64748b;
     transition: background 0.2s, color 0.2s;
 }
-.btn-close-drawer:hover {
-    background: #e2e8f0;
-    color: #0f172a;
-}
+.btn-close-drawer:hover { background: #e2e8f0; color: #0f172a; }
 
 /* ══ Overlay ══ */
 .drawer-overlay {
@@ -356,16 +391,12 @@ html { overflow-y: scroll; }
     pointer-events: none;
     transition: opacity 0.4s ease;
 }
-.drawer-overlay--visible {
-    opacity: 1;
-    pointer-events: auto;
-}
+.drawer-overlay--visible { opacity: 1; pointer-events: auto; }
 
 /* ══ Bouton flottant ══ */
 .drawer-fab {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
+    bottom: 2rem; right: 2rem;
     z-index: 1040;
     display: flex;
     align-items: center;
@@ -382,31 +413,14 @@ html { overflow-y: scroll; }
     cursor: pointer;
     transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
 }
-.drawer-fab:hover {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow: 0 12px 30px rgba(79, 70, 229, 0.5);
-}
-.drawer-fab--hidden {
-    opacity: 0;
-    pointer-events: none;
-    transform: translateY(10px);
-}
+.drawer-fab:hover { transform: translateY(-3px) scale(1.03); box-shadow: 0 12px 30px rgba(79, 70, 229, 0.5); }
+.drawer-fab--hidden { opacity: 0; pointer-events: none; transform: translateY(10px); }
 
 /* ── Animation listes ── */
-.liste-item-enter-active {
-    transition: opacity 0.25s ease, max-height 0.25s ease;
-    max-height: 60px; overflow: hidden;
-}
-.liste-item-leave-active {
-    transition: opacity 0.2s ease, max-height 0.22s ease;
-    max-height: 60px; overflow: hidden;
-}
+.liste-item-enter-active { transition: opacity 0.25s ease, max-height 0.25s ease; max-height: 60px; overflow: hidden; }
+.liste-item-leave-active { transition: opacity 0.2s ease, max-height 0.22s ease; max-height: 60px; overflow: hidden; }
 .liste-item-enter-from { opacity: 0; }
-.liste-item-leave-to {
-    opacity: 0;
-    max-height: 0 !important;
-    margin-bottom: 0 !important;
-}
+.liste-item-leave-to { opacity: 0; max-height: 0 !important; margin-bottom: 0 !important; }
 .liste-item-move { transition: transform 0.25s ease; }
 
 /* ── Duel 2nd tour ── */
@@ -416,10 +430,7 @@ html { overflow-y: scroll; }
     opacity: 0;
     transition: grid-template-rows 0.35s ease, opacity 0.3s ease;
 }
-.duel-wrapper.duel-visible {
-    grid-template-rows: 1fr;
-    opacity: 1;
-}
+.duel-wrapper.duel-visible { grid-template-rows: 1fr; opacity: 1; }
 .duel-inner { overflow: hidden; min-height: 0; }
 
 @media (max-width: 576px) {

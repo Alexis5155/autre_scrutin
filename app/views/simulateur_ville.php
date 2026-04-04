@@ -136,6 +136,13 @@
                 </p>
             </template>
         </div>
+        <div class="col-12 d-flex justify-content-end">
+            <button @click="importerDansSimulateur"
+                    class="btn btn-light border fw-semibold"
+                    style="border-radius: 12px;">
+                <i class="bi bi-box-arrow-up-right me-2"></i>Importer dans le simulateur
+            </button>
+        </div>
     </div>
 
     <!-- RÉCAPITULATIF 1ER TOUR -->
