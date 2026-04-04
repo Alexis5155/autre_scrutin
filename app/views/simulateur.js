@@ -11,8 +11,10 @@ createApp({
             villeImportee: null,
             parametres: { sieges: 39, isPLM: false },
             listes: [
-                { id: 'L1', valeurSaisie: 0, nom: null, vainqueur2nd: false },
-                { id: 'L2', valeurSaisie: 0, nom: null, vainqueur2nd: false },
+                { id: 'L1', valeurSaisie: 4871, nom: null, vainqueur2nd: false },
+                { id: 'L2', valeurSaisie: 4294, nom: null, vainqueur2nd: true },
+                { id: 'L3', valeurSaisie: 1732, nom: null, vainqueur2nd: false },
+                { id: 'L4', valeurSaisie: 263, nom: null, vainqueur2nd: false },
             ],
             COLORS,
             nextId: 3,
@@ -89,12 +91,14 @@ createApp({
             return this.totalVoix > 0;
         },
         listesAvecPourcentage() {
+            // Total uniquement sur les listes avec des voix
+            const totalReel = this.listes.reduce((acc, l) => acc + (Number(l.valeurSaisie) || 0), 0);
             return this.listes.map((l, index) => {
                 let pct = 0;
                 if (this.modeSaisie === 'pourcentage') {
                     pct = Number(l.valeurSaisie) || 0;
-                } else if (this.totalVoix > 0) {
-                    pct = ((Number(l.valeurSaisie) || 0) / this.totalVoix) * 100;
+                } else if (totalReel > 0) {
+                    pct = ((Number(l.valeurSaisie) || 0) / totalReel) * 100;
                 }
                 return {
                     id:        l.id,
@@ -108,7 +112,9 @@ createApp({
             return this.listesAvecPourcentage.some(l => l.scoreReel > 50);
         },
         listesTriees() {
-            return [...this.listesAvecPourcentage].sort((a, b) => b.scoreReel - a.scoreReel);
+            return [...this.listesAvecPourcentage]
+                .filter(l => l.scoreReel > 0)
+                .sort((a, b) => b.scoreReel - a.scoreReel);
         },
         finaliste1() { return this.listesTriees[0] || {}; },
         finaliste2() { return this.listesTriees[1] || {}; }
@@ -159,17 +165,24 @@ createApp({
         },
         async lancerSimulation() {
             const listesPourPhp = {};
-            this.listesAvecPourcentage.forEach(l => {
-                listesPourPhp[l.id] = {
-                    id:             l.id,
-                    nom:            l.nom,
-                    score_1er_tour: l.scoreReel,
-                    couleur:        l.couleur
-                };
-            });
 
+            // N'envoyer QUE les listes avec des voix > 0
+            this.listesAvecPourcentage
+                .filter(l => l.scoreReel > 0)
+                .forEach(l => {
+                    listesPourPhp[l.id] = {
+                        id:             l.id,
+                        nom:            l.nom,
+                        score_1er_tour: l.scoreReel,
+                        couleur:        l.couleur
+                    };
+                });
+
+            // runnerUp = le finaliste qui n'est PAS le vainqueur, parmi les 2 premiers
             const runnerUpId = (!this.victoirePremierTour && this.vainqueur2ndTour)
-                ? (this.vainqueur2ndTour === this.finaliste1.id ? this.finaliste2.id : this.finaliste1.id)
+                ? (this.vainqueur2ndTour === this.finaliste1.id
+                    ? this.finaliste2.id
+                    : this.finaliste1.id)
                 : null;
 
             const payload = {
@@ -187,10 +200,8 @@ createApp({
                     body: JSON.stringify(payload)
                 });
                 const data = await response.json();
-                if (data.error) {
-                    alert('Erreur : ' + data.error);
-                    return;
-                }
+                if (data.error) { alert('Erreur : ' + data.error); return; }
+
                 this.resultats = Object.values(data.resultats ?? data).map(res => {
                     const origine = Object.values(listesPourPhp).find(l => l.nom === res.nom);
                     return { ...res, couleur: origine?.couleur ?? '#ccc' };
@@ -243,16 +254,24 @@ createApp({
     },
 
     watch: {
-        victoirePremierTour(val) {
-            if (val) this.vainqueur2ndTour = null;
-        },
-        modeSaisie(newMode, oldMode) {
-            if (newMode === 'pourcentage' && oldMode === 'voix' && this.totalVoix > 0) {
-                const total = this.totalVoix;
-                this.listes.forEach(l => {
-                    l.valeurSaisie = Number(((l.valeurSaisie / total) * 100).toFixed(1));
-                });
-            }
+    victoirePremierTour(val) {
+        if (val) this.vainqueur2ndTour = null;
+    },
+    // Réinitialise le vainqueur si la liste choisie n'est plus dans le top 2
+    listesTriees(nouvelles) {
+        if (!this.vainqueur2ndTour) return;
+        const ids = nouvelles.slice(0, 2).map(l => l.id);
+        if (!ids.includes(this.vainqueur2ndTour)) {
+            this.vainqueur2ndTour = null;
+        }
+    },
+    modeSaisie(newMode, oldMode) {
+        if (newMode === 'pourcentage' && oldMode === 'voix' && this.totalVoix > 0) {
+            const total = this.totalVoix;
+            this.listes.forEach(l => {
+                l.valeurSaisie = Number(((l.valeurSaisie / total) * 100).toFixed(1));
+            });
         }
     }
+}
 }).mount('#app-simulateur');
