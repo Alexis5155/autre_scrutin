@@ -147,11 +147,13 @@ class Simulateur {
             die("Code INSEE invalide.");
         }
 
-        // $codeInsee doit être dans la portée locale pour que require_once y accède
-        // et l'injecte dans la balise <script> de simulateur_ville.php
+        // Sans cette ligne, $codeInsee n'est pas dans la portée du require
+        // et la vue reçoit une chaîne vide → fetch() part avec insee='' → rien ne s'affiche
+        $codeInsee = strtoupper(trim($codeInsee)); // normalise + reste disponible dans require
+
         ob_start();
-        require_once __DIR__ . '/../views/simulateur_ville.php';
+        require __DIR__ . '/../views/simulateur_ville.php';
         $content = ob_get_clean();
-        require_once __DIR__ . '/../views/layout.php';
+        require __DIR__ . '/../views/layout.php';
     }
 }

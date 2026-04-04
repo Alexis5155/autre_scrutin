@@ -1,3 +1,7 @@
+console.log('JS chargé');
+console.log('BASE_URL =', typeof BASE_URL !== 'undefined' ? BASE_URL : 'NON DÉFINI');
+console.log('CODE_INSEE =', typeof CODE_INSEE !== 'undefined' ? CODE_INSEE : 'NON DÉFINI');
+
 const COLORS = ['#4f46e5', '#ec4899', '#10b981', '#f59e0b', '#6366f1', '#ef4444', '#8b5cf6', '#14b8a6', '#f43f5e', '#84cc16'];
 
 let chartActuel = null;
@@ -8,6 +12,27 @@ function extractVainqueurId(donnees) {
     const nomVainqueur = donnees.explications.distribution_primes.vainqueur.nom;
     const liste = donnees.listesInitiales.find(l => l.nom === nomVainqueur);
     return liste ? liste.id : null;
+}
+
+// Fermeture du loader — opère sur des éléments HORS du mount Vue
+function fermerLoader() {
+    console.log('fermerLoader appelé')
+    const overlay = document.getElementById('loader-overlay');
+    const content = document.getElementById('main-content');
+
+    if (!overlay) return;
+
+    // Déclenche le fade-out organique
+    overlay.classList.add('closing');
+
+    // Après la fin de l'animation (600ms), on retire le loader
+    // et on révèle le contenu avec son animation d'entrée
+    setTimeout(() => {
+        overlay.style.display = 'none';
+        if (content) {
+            content.classList.add('revealed');
+        }
+    }, 600);
 }
 
 const { createApp } = Vue;
@@ -31,14 +56,14 @@ createApp({
         };
     },
 
-    // ─── UN SEUL mounted() ────────────────────────────────────────────────────
     mounted() {
         fetch(BASE_URL + 'simulateur/data?insee=' + CODE_INSEE)
             .then(r => r.json())
             .then(data => {
                 if (data.error) {
-                    this.erreur    = data.error;
-                    this.chargement = false;
+                    this.erreur      = data.error;
+                    this.chargement  = false;
+                    fermerLoader();
                     return;
                 }
 
@@ -55,14 +80,18 @@ createApp({
                     this.dessinerHemicycleActuel(la, da, ca);
 
                     const lr = this.listesCompleteReforme.map(r => r.nom);
-                    const dr = this.listesCompleteReforme.map(r => r.totalsieges);  // ← était r.total_sieges (bug)
+                    const dr = this.listesCompleteReforme.map(r => r.totalsieges);
                     const cr = this.listesCompleteReforme.map(r => this.getCouleurByNom(r.nom));
                     this.dessinerHemicycleReforme(lr, dr, cr);
+
+                    // On lance le loader APRÈS que Vue a fini son rendu
+                    fermerLoader();
                 });
             })
             .catch(() => {
                 this.erreur     = 'Erreur réseau lors du chargement des données.';
                 this.chargement = false;
+                fermerLoader();
             });
     },
 
@@ -309,7 +338,7 @@ createApp({
 
                 this.$nextTick(() => {
                     const lr = this.listesCompleteReforme.map(r => r.nom);
-                    const dr = this.listesCompleteReforme.map(r => r.totalsieges); // ← corrigé
+                    const dr = this.listesCompleteReforme.map(r => r.totalsieges);
                     const cr = this.listesCompleteReforme.map(r => this.getCouleurByNom(r.nom));
                     this.dessinerHemicycleReforme(lr, dr, cr);
                 });
@@ -366,3 +395,4 @@ createApp({
         },
     }
 }).mount('#app-ville');
+console.log('Vue monté');
