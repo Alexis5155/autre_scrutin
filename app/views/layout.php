@@ -33,8 +33,6 @@
 
         .wrapper {
             position: relative;
-            /* On retire overflow-x: hidden d'ici car il est géré par body, 
-               évitant ainsi le conflit de la double scrollbar */
             min-height: 100vh;
             display: flex;
             flex-direction: column;
