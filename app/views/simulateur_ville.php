@@ -80,6 +80,28 @@
 .loader-dots span:nth-child(2) { animation-delay: .22s; }
 .loader-dots span:nth-child(3) { animation-delay: .44s; }
 
+.fusion-tooltip-trigger {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    cursor: default;
+    font-size: 0.8rem;
+    color: #6c757d;
+}
+.fusion-tooltip {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    background: #fff;
+    border: 1px solid #dee2e6;
+    white-space: nowrap;
+    pointer-events: none;
+    min-width: 240px;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
 /* ── Contenu principal ────────────────────────── */
 #main-content {
     opacity: 0;
@@ -176,23 +198,47 @@
                 <div class="flex-grow-1">
                     <template v-if="!erreur">
                         <div v-for="(liste, index) in listesActuellesLegende" :key="'leg_'+index"
-                             class="d-flex align-items-center mb-2 p-2 rounded-3 shadow-sm transition-all"
-                             :class="{
+                            class="d-flex align-items-center mb-2 p-2 rounded-3 shadow-sm"
+                            :class="{
                                 'bg-white border border-warning border-2': index === 0 && liste.sieges_reel > 0,
                                 'bg-white': index !== 0 && liste.id !== 'autres',
                                 'bg-light opacity-75': liste.id === 'autres'
-                             }">
-                            <span class="d-inline-block rounded-circle me-3 flex-shrink-0"
-                                  :style="{width:'14px', height:'14px', backgroundColor: liste.couleur}"></span>
-                            <div class="flex-grow-1 text-truncate lh-sm">
-                                <span class="fw-bold fs-6" :class="liste.id === 'autres' ? 'text-muted' : 'text-dark'" :title="liste.nom">{{ liste.nom }}</span>
-                                <div v-if="liste.candidat && liste.id !== 'autres'" class="text-muted" style="font-size: 0.75rem;">
+                            }"
+                            style="min-width:0; overflow:hidden;">
+
+                            <span class="d-inline-block rounded-circle me-2 flex-shrink-0"
+                                :style="{width:'12px', height:'12px', backgroundColor: liste.couleur}"></span>
+
+                            <div style="flex:1 1 0; min-width:0; overflow:hidden;" class="lh-sm">
+                                <div style="display:flex; align-items:center; min-width:0; overflow:hidden;">
+                                    <span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; min-width:0; flex:1 1 0; font-size:0.9rem;"
+                                        class="fw-bold"
+                                        :class="liste.id === 'autres' ? 'text-muted' : 'text-dark'"
+                                        :title="liste.nom_T2 || liste.nom">
+                                        {{ liste.nom_T2 || liste.nom }}
+                                    </span>
+                                    <span v-if="listeFusionnees(liste).length > 0"
+                                        class="text-muted ms-1"
+                                        style="flex-shrink:0; cursor:default; font-size:0.8rem; line-height:1;"
+                                        data-bs-toggle="popover"
+                                        data-bs-trigger="hover"
+                                        data-bs-placement="top"
+                                        data-bs-html="true"
+                                        :data-bs-title="'<i class=\'bi bi-node-plus-fill me-1\'></i> Fusion au 2nd tour'"
+                                        :data-bs-content="popoverFusion(liste)">
+                                        <i class="bi bi-node-plus-fill"></i>
+                                    </span>
+                                </div>
+                                <div v-if="liste.candidat && liste.id !== 'autres'"
+                                    style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:0.72rem;"
+                                    class="text-muted">
                                     {{ liste.candidat }}
                                 </div>
                             </div>
-                            <div class="ms-2 flex-shrink-0 text-end">
+
+                            <div class="ms-2 text-end" style="flex-shrink:0;">
                                 <span class="badge rounded-pill fs-6"
-                                      :class="index === 0 && liste.sieges_reel > 0 ? 'bg-warning text-dark' : 'bg-secondary'">
+                                    :class="index === 0 && liste.sieges_reel > 0 ? 'bg-warning text-dark' : 'bg-secondary'">
                                     {{ liste.sieges_reel }}
                                 </span>
                             </div>

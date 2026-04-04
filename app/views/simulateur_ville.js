@@ -87,6 +87,18 @@ createApp({
 
                     // On lance le loader APRÈS que Vue a fini son rendu
                     fermerLoader();
+                    document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+                        const existing = bootstrap.Popover.getInstance(el);
+                        if (existing) existing.dispose();
+                        new bootstrap.Popover(el, {
+                            container: 'body',
+                            html: true,
+                            trigger: 'hover',
+                            placement: 'top',
+                            title: el.getAttribute('data-bs-title'),
+                            content: el.getAttribute('data-bs-content'),
+                        });
+                    });
                 });
             })
             .catch(() => {
@@ -395,6 +407,26 @@ createApp({
                 }
             }, 150);
         },
+        listeFusionnees(listeHote) {
+            if (!listeHote || !this.donnees.listesInitiales) return [];
+            const panneau = String(listeHote.num_panneau ?? '');
+            if (!panneau) return [];
+            return this.donnees.listesInitiales.filter(l =>
+                l.fusionnees_avec !== undefined &&
+                String(l.fusionnees_avec) === panneau
+            );
+        },
+        popoverFusion(liste) {
+            const lignes = [];
+            const fmt = (nom, nuance) => {
+                const s = this.getNuanceStyle(nuance);
+                return `<span class="d-block" style="font-size:0.78rem;">• ${nom} <span class="badge fw-normal ms-1" style="background-color:${s.backgroundColor};color:${s.color};border:1px solid ${s.borderColor.replace(' !important','')}">${nuance}</span></span>`;
+            };
+            lignes.push(fmt(liste.nom_T2 || liste.nom, liste.nuance));
+            this.listeFusionnees(liste).forEach(f => lignes.push(fmt(f.nom, f.nuance)));
+            return lignes.join('');
+        },
     }
 }).mount('#app-ville');
 console.log('Vue monté');
+

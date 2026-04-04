@@ -95,7 +95,6 @@ class Simulateur {
 
             $cacheKey = 'ville_' . $codeInsee;
 
-            session_destroy(); // <-- DEBUG : à retirer, sinon on perd le cache à chaque requête
             if (isset($_SESSION[$cacheKey])) {
                 $donneesVille = $_SESSION[$cacheKey];
             } else {
