@@ -87,138 +87,345 @@
 
     <hr class="my-5 opacity-25">
 
-    <!-- === LES 3 PILIERS === -->
+    <!-- === CE QUE CHANGE CONCRÈTEMENT === -->
     <div class="py-4 fade-in-up" style="animation-delay:0.15s;">
         <div class="text-center mb-5">
             <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-semibold">
-                <i class="bi bi-columns-gap me-1"></i> Les trois piliers de la réforme
+                <i class="bi bi-check2-circle me-1"></i> Les apports de la réforme
             </span>
-            <h2 class="fw-bold" style="font-size:clamp(1.6rem,3vw,2.4rem);">Un mécanisme en trois actes</h2>
+            <h2 class="fw-bold" style="font-size:clamp(1.6rem,3vw,2.4rem);">Ce que change concrètement cette réforme</h2>
             <p class="text-muted mx-auto" style="max-width:60ch;">
-                Chaque pilier répond à une défaillance identifiée du système actuel. Ensemble, ils forment un équilibre cohérent
+                Chaque avantage découle directement du mécanisme. Ensemble, ils forment un équilibre inédit
                 entre efficacité gouvernementale et représentation démocratique.
             </p>
         </div>
-        <div class="row g-4 mb-4">
-            <div class="col-lg-5">
-                <div class="glass-card p-4 p-lg-5 h-100 d-flex flex-column justify-content-center"
-                     style="background: linear-gradient(135deg, rgba(13,110,253,0.07) 0%, transparent 100%);">
-                    <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center mb-3"
-                         style="width:52px;height:52px;">
-                        <i class="bi bi-1-circle-fill text-primary fs-4"></i>
+
+        <div class="row g-4">
+
+            <!-- 01 -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100 border-start border-primary border-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge bg-primary text-white fw-bold px-2 py-1" style="font-size:.7rem;letter-spacing:.06em;">01</span>
+                        <h3 class="fs-5 fw-bold mb-0">Atténuation du vote utile</h3>
                     </div>
-                    <h3 class="fs-3 fw-bold mb-3">La fin du vote utile</h3>
-                    <p class="text-muted mb-3">
-                        Dès le premier tour, les sièges de la proportionnelle sont figés définitivement.
-                        Chaque liste ayant franchi le seuil de <strong>5 % des inscrits</strong> se voit attribuer ses sièges proportionnels —
-                        et les conserve quel que soit le résultat du second tour.
+                    <p class="text-muted mb-2">
+                        Aujourd'hui, voter pour une petite liste au 1<sup>er</sup> tour équivaut souvent à « perdre » son vote :
+                        si la liste ne se maintient pas ou fusionne, ses électeurs n'ont aucun représentant.
+                        Ce mécanisme contraint des millions de citoyens à voter stratégiquement plutôt que sincèrement.
                     </p>
-                    <p class="text-muted mb-3">
-                        Un électeur peut voter pour la liste qui correspond à ses convictions sans craindre de « perdre » son vote.
-                        La représentation des petites listes est <strong>garantie dès le premier tour</strong>.
-                    </p>
-                    <p class="text-muted mb-0 fst-italic border-start border-primary border-2 ps-3">
-                        La réforme consacre l'adage : <strong>« Au 1<sup>er</sup> tour on choisit, au 2<sup>nd</sup> on élimine. »</strong>
-                        Le second tour retrouve sa vocation première : désigner la direction exécutive de la commune, sans écraser la représentation pluraliste déjà acquise.
+                    <p class="text-muted mb-0">
+                        Avec la réforme, <strong>les sièges proportionnels sont figés dès le 1<sup>er</sup> tour</strong>, quoi qu'il arrive au second.
+                        Un électeur peut voter pour la liste qui correspond à ses convictions sans craindre de « perdre » son vote —
+                        sa liste sera représentée si elle franchit le seuil de 5 % des suffrages exprimés.
                     </p>
                 </div>
             </div>
-            <div class="col-lg-7">
-                <div class="row g-4">
-                    <div class="col-12">
-                        <div class="glass-card p-4">
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center flex-shrink-0"
-                                     style="width:48px;height:48px;">
-                                    <i class="bi bi-2-circle-fill text-primary fs-5"></i>
-                                </div>
-                                <div>
-                                    <h3 class="fs-5 fw-bold mb-2">Prime majoritaire et prime minoritaire</h3>
-                                    <p class="text-muted mb-0">
-                                        Le vainqueur du second tour obtient une <strong>prime majoritaire de 40 %</strong> des sièges
-                                        (30 % dans les communes PLM), garantissant une majorité stable et opérationnelle.
-                                        En contrepartie, le finaliste reçoit une <strong>prime minoritaire de 10 %</strong> des sièges,
-                                        lui conférant naturellement une posture de leader de l'opposition avec un poids politique réel dans les débats.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+
+            <!-- 02 -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100 border-start border-warning border-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge bg-warning text-dark fw-bold px-2 py-1" style="font-size:.7rem;letter-spacing:.06em;">02</span>
+                        <h3 class="fs-5 fw-bold mb-0">Fin des fusions contre-nature</h3>
                     </div>
-                    <div class="col-12">
-                        <div class="glass-card p-4">
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="rounded-circle bg-primary bg-opacity-10 d-inline-flex align-items-center justify-content-center flex-shrink-0"
-                                     style="width:48px;height:48px;">
-                                    <i class="bi bi-3-circle-fill text-primary fs-5"></i>
-                                </div>
-                                <div>
-                                    <h3 class="fs-5 fw-bold mb-2">Des petites listes qui comptent vraiment</h3>
-                                    <p class="text-muted mb-0">
-                                        Toute liste ayant franchi le seuil de 5 % des inscrits entre au conseil avec ses sièges proportionnels acquis au 1<sup>er</sup> tour.
-                                        Ces élus participent pleinement aux délibérations, représentant leurs électeurs indépendamment du résultat du second tour.
-                                        Le conseil municipal reflète ainsi fidèlement la diversité des sensibilités politiques.
-                                    </p>
-                                </div>
+                    <p class="text-muted mb-2">
+                        Sous le régime actuel, des listes aux programmes antagonistes se fusionnent entre les deux tours pour constituer
+                        un « front républicain » ou simplement espérer accéder aux primes. Ces alliances trahissent les électeurs
+                        du 1<sup>er</sup> tour et brouillent la lisibilité politique du conseil.
+                    </p>
+                    <p class="text-muted mb-0">
+                        Avec la réforme, chaque liste présente ses propres élus. Les fusions ne sont plus nécessaires
+                        pour exister au conseil — elles restent possibles pour le 2<sup>nd</sup> tour, mais sans pression existentielle.
+                        <strong>Chaque liste assume ses couleurs jusqu'au bout.</strong>
+                    </p>
+                </div>
+            </div>
+
+            <!-- 03 -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100 border-start border-success border-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge bg-success text-white fw-bold px-2 py-1" style="font-size:.7rem;letter-spacing:.06em;">03</span>
+                        <h3 class="fs-5 fw-bold mb-0">Second tour : un duel lisible</h3>
+                    </div>
+                    <p class="text-muted mb-2">
+                        Le second tour retrouve sa vocation première : désigner l'équipe qui gouvernera la commune.
+                        Dans l'immense majorité des situations, seules les deux listes les mieux placées ont un intérêt
+                        à se maintenir — les autres ont déjà sécurisé leurs sièges proportionnels au 1<sup>er</sup> tour
+                        et n'ont aucune raison de participer à un duel dont elles ne peuvent espérer emporter les primes.
+                    </p>
+                    <p class="text-muted mb-0">
+                        Sans règle formelle d'exclusion, le système crée naturellement ce duel. Le second tour devient
+                        un scrutin majoritaire pur, <strong>clair pour l'électeur</strong> : à qui confie-t-on les clés de la mairie ?
+                    </p>
+                </div>
+            </div>
+
+            <!-- 04 -->
+            <div class="col-lg-6">
+                <div class="glass-card p-4 h-100 border-start border-info border-3">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge text-white fw-bold px-2 py-1" style="font-size:.7rem;letter-spacing:.06em;background:var(--bs-info);">04</span>
+                        <h3 class="fs-5 fw-bold mb-0">Maintien de la stabilité municipale</h3>
+                    </div>
+                    <p class="text-muted mb-2">
+                        La prime majoritaire garantit au vainqueur une <strong>majorité absolue confortable</strong>, lui permettant de
+                        gouverner sans négociation permanente. La stabilité de l'exécutif municipal est préservée,
+                        voire renforcée par rapport au système actuel.
+                    </p>
+                    <p class="text-muted mb-0">
+                        La prime minoritaire, en consacrant un leader de l'opposition identifié et disposant d'un poids réel,
+                        structure le débat démocratique au lieu de le disperser. Majorité qui gouverne, opposition qui contrôle :
+                        les deux piliers d'une démocratie locale saine coexistent enfin.
+                    </p>
+                </div>
+            </div>
+
+            <!-- 05 -->
+            <div class="col-12">
+                <div class="glass-card p-4 border-start border-3" style="border-color:var(--secondary)!important;">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge text-white fw-bold px-2 py-1" style="font-size:.7rem;letter-spacing:.06em;background:var(--secondary);">05</span>
+                        <h3 class="fs-5 fw-bold mb-0">Meilleure représentativité des petites listes</h3>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-md-7">
+                            <p class="text-muted mb-2">
+                                Sous le régime actuel, une liste obtenant entre 5 et 10 % des voix peut être contrainte de se désister
+                                ou de fusionner entre les deux tours pour ne pas « faire perdre » un camp. Elle disparaît alors du conseil,
+                                et ses électeurs se retrouvent sans représentant, malgré un score significatif.
+                            </p>
+                            <p class="text-muted mb-0">
+                                Avec la réforme, <strong>toute liste franchissant 5 % des suffrages exprimés</strong> obtient ses sièges
+                                proportionnels au 1<sup>er</sup> tour et les conserve définitivement. Mieux : une liste à 8 % qui se maintient
+                                au 2<sup>nd</sup> tour — même en arrivant troisième — <strong>bénéficie à la fois de ses sièges proportionnels
+                                et de la répartition du solde</strong>. Elle siège, elle débat, elle représente.
+                            </p>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="rounded-3 p-3 h-100 d-flex flex-column justify-content-center gap-3"
+                                style="background:rgba(108,117,125,0.07);">
+                                <span><strong>La fin des injustices électorales</strong></span>
+                                <span class="small text-muted"><strong>Avec le système actuel :</strong> Une liste à 8% au 1<sup>er</sup> tour ne fusionnant pas obtient 0 siège ; alors qu'une liste à 8 % au 2<sup>nd</sup> tour obtiendra des sièges</span>
+                                <span class="small text-muted"><strong>Avec la proposition de réforme :</strong> Une liste qui obtient 8 % au 1<sup>er</sup> tour sera représentée au conseil municipal</strong></span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 
-    <!-- === RÉPARTITION CONCRÈTE === -->
+
+    <hr class="my-5 opacity-25">
+
+
+    <!-- === ATTRIBUTION DES SIÈGES — STEPPER === -->
     <div class="py-5 my-2 fade-in-up" style="animation-delay:0.2s;">
-        <div class="glass-card p-4 p-lg-5"
-             style="background: linear-gradient(135deg, rgba(108,117,125,0.06) 0%, transparent 80%);">
-            <div class="row align-items-center g-4">
-                <div class="col-lg-4">
-                    <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-semibold">
-                        <i class="bi bi-diagram-3 me-1"></i> Fonctionnement
-                    </span>
-                    <h2 class="fw-bold mb-3" style="font-size:clamp(1.4rem,2.5vw,2rem);">
-                        La répartition des sièges en pratique
-                    </h2>
-                    <p class="text-muted">
-                        Sur un conseil municipal de 39 sièges (commune de 20 000 à 29 999 habitants),
-                        la répartition s'organise comme suit :
-                    </p>
+        <div class="text-center mb-5">
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 rounded-pill fw-semibold">
+                <i class="bi bi-diagram-3 me-1"></i> Fonctionnement
+            </span>
+            <h2 class="fw-bold" style="font-size:clamp(1.6rem,3vw,2.4rem);">Comment les sièges sont attribués</h2>
+            <p class="text-muted mx-auto mb-3" style="max-width:58ch;">
+                Un processus en trois étapes, lisible et transparent.
+                Les chiffres ci-dessous correspondent à un conseil municipal de <strong>39 sièges</strong>
+                (commune de 20 000 à 29 999 habitants).
+            </p>
+            <button class="btn btn-sm btn-outline-secondary px-3" id="btn-systeme-actuel"
+                    onclick="toggleSystemeActuel()" style="font-size:.8rem;">
+                <i class="bi bi-eye me-1"></i> Voir comment fonctionne le système actuel
+            </button>
+        </div>
+
+        <!-- Panneau système actuel -->
+        <div id="panneau-systeme-actuel"
+            style="display:none; overflow:hidden;"
+            aria-hidden="true">
+            <div class="glass-card p-4 mb-5" style="border-left:4px solid #dc3545;">
+                <div class="d-flex align-items-center gap-2 mb-3">
+                    <i class="bi bi-exclamation-triangle text-danger fs-5"></i>
+                    <h4 class="fw-bold mb-0 fs-5">Le système actuel (depuis 1982)</h4>
                 </div>
-                <div class="col-lg-8">
-                    <div class="row g-3 text-center">
-                        <div class="col-6 col-md-3">
-                            <div class="p-3 rounded-3 h-100" style="background:rgba(13,110,253,0.10);">
-                                <div class="fw-bold fs-2 text-primary">16</div>
-                                <div class="small text-muted mt-1">sièges proportionnels<br><span class="fw-semibold">1<sup>er</sup> tour</span></div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <div class="p-3 rounded-3 h-100" style="background:rgba(108,117,125,0.10);">
-                                <div class="fw-bold fs-2" style="color:var(--secondary)">+16</div>
-                                <div class="small text-muted mt-1">prime majorité<br><span class="fw-semibold">vainqueur 2<sup>nd</sup> tour</span></div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <div class="p-3 rounded-3 h-100" style="background:rgba(16,185,129,0.10);">
-                                <div class="fw-bold fs-2 text-success">+4</div>
-                                <div class="small text-muted mt-1">prime minorité<br><span class="fw-semibold">finaliste 2<sup>nd</sup> tour</span></div>
-                            </div>
-                        </div>
-                        <div class="col-6 col-md-3">
-                            <div class="p-3 rounded-3 h-100" style="background:rgba(245,158,11,0.10);">
-                                <div class="fw-bold fs-2 text-warning">+3</div>
-                                <div class="small text-muted mt-1">sièges restants<br><span class="fw-semibold">à la proportionnelle</span></div>
-                            </div>
-                        </div>
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <h6 class="fw-semibold mb-2"><i class="bi bi-1-circle me-1 text-muted"></i> Premier tour</h6>
+                        <p class="text-muted small mb-0">
+                            Si une liste obtient la <strong>majorité absolue</strong> des suffrages exprimés, elle remporte
+                            immédiatement la <strong>prime majoritaire</strong> (la moitié des sièges, arrondie à l'entier supérieur),
+                            puis les sièges restants sont répartis à la proportionnelle à la plus forte moyenne entre toutes
+                            les listes ayant obtenu au moins <strong>5 % des suffrages exprimés</strong> — y compris la liste primée.
+                            <br>Sinon, on passe au second tour.
+                        </p>
                     </div>
-                    <p class="small text-muted mt-3 mb-0">
-                        <i class="bi bi-info-circle me-1"></i>
-                        Dans les communes soumises au régime PLM (Paris, Lyon, Marseille), la prime majorité est ramenée à
-                        <strong>30 %</strong> pour renforcer la représentation proportionnelle.
-                    </p>
+                    <div class="col-md-6">
+                        <h6 class="fw-semibold mb-2"><i class="bi bi-2-circle me-1 text-muted"></i> Second tour</h6>
+                        <p class="text-muted small mb-0">
+                            Seules les listes ayant obtenu au moins <strong>12,5 % des inscrits</strong> au 1<sup>er</sup> tour
+                            peuvent se maintenir (les listes à 5 % des suffrages exprimés peuvent fusionner).
+                            La liste arrivée en tête — même avec une <strong>simple majorité relative</strong> — remporte
+                            la prime majoritaire (moitié des sièges). Les sièges restants sont répartis à la proportionnelle
+                            entre toutes les listes présentes ayant obtenu au moins 5 % des suffrages exprimés.
+                            <br><strong class="text-danger">Conséquence :</strong> une liste fusionnée ou désistée disparaît
+                            totalement du conseil, quelle que soit son influence au 1<sup>er</sup> tour.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
+        
+        <!-- Stepper -->
+        <div class="position-relative" id="stepper">
+
+            <!-- Ligne verticale desktop -->
+            <div class="d-none d-lg-block position-absolute top-0 bottom-0 start-50 translate-middle-x"
+                style="width:2px;background:var(--bs-border-color);opacity:.3;z-index:0;"></div>
+
+            <!-- ÉTAPE 1 -->
+            <div class="row g-0 align-items-center mb-4 position-relative" style="z-index:1;">
+                <div class="col-lg-5 text-lg-end pe-lg-5">
+                    <div class="glass-card p-4" style="border-top:3px solid #0d6efd;">
+                        <div class="d-flex align-items-center justify-content-lg-end gap-2 mb-2">
+                            <span class="badge bg-primary fw-bold px-2">Étape 1</span>
+                            <h3 class="fs-5 fw-bold mb-0">1<sup>er</sup> tour — proportionnelle</h3>
+                        </div>
+                        <p class="text-muted small mb-2">
+                            <strong>50 % des sièges</strong> sont répartis à la proportionnelle entre toutes les listes
+                            ayant obtenu au moins <strong>5 % des suffrages exprimés</strong>.
+                        </p>
+                        <p class="text-muted small mb-2">
+                            La méthode utilisée est celle du <strong>quotient électoral puis de la plus forte moyenne</strong> :
+                            on divise le nombre de suffrages exprimés par le nombre de sièges à pourvoir pour obtenir
+                            le quotient ; chaque liste reçoit autant de sièges entiers que son score le permet,
+                            puis les sièges restants sont attribués un à un aux listes ayant la plus forte moyenne
+                            (voix ÷ sièges déjà obtenus + 1).
+                        </p>
+                        <p class="text-muted small mb-0 fst-italic border-start border-primary border-2 ps-2">
+                            Ces sièges sont <strong>définitivement acquis</strong>, indépendamment du résultat du second tour.
+                        </p>
+                    </div>
+                </div>
+                <div class="col-lg-2 d-none d-lg-flex justify-content-center">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center text-white fw-bold"
+                        style="width:42px;height:42px;z-index:2;flex-shrink:0;">1</div>
+                </div>
+                <div class="col-lg-5 ps-lg-5 d-none d-lg-flex align-items-center">
+                    <div class="p-4 rounded-3 w-100 text-center" style="background:rgba(13,110,253,0.08);">
+                        <div class="fw-bold" style="font-size:2.5rem;color:#0d6efd;line-height:1;">20</div>
+                        <div class="small text-muted mt-1">sièges attribués à la proportionnelle</div>
+                        <div class="small text-muted opacity-75 mt-1">= 50 % de 39 sièges</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 2 -->
+            <div class="row g-0 align-items-center mb-4 position-relative" style="z-index:1;">
+                <div class="col-lg-5 d-none d-lg-flex align-items-center justify-content-end pe-lg-5">
+                    <div class="p-4 rounded-3 text-center" style="background:rgba(245,158,11,0.08);">
+                        <div class="fw-bold text-warning mb-1" style="font-size:1.1rem;">Sauf si…</div>
+                        <div class="small text-muted">une liste obtient la majorité absolue<br>dès le 1<sup>er</sup> tour → on passe<br>directement aux primes</div>
+                    </div>
+                </div>
+                <div class="col-lg-2 d-none d-lg-flex justify-content-center">
+                    <div class="rounded-circle bg-warning d-flex align-items-center justify-content-center text-dark fw-bold"
+                        style="width:42px;height:42px;z-index:2;flex-shrink:0;">2</div>
+                </div>
+                <div class="col-lg-5 ps-lg-5">
+                    <div class="glass-card p-4" style="border-top:3px solid #f59e0b;">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <span class="badge bg-warning text-dark fw-bold px-2">Étape 2</span>
+                            <h3 class="fs-5 fw-bold mb-0">2<sup>nd</sup> tour — le duel</h3>
+                        </div>
+                        <p class="text-muted small mb-2">
+                            Si aucune liste n'a obtenu la <strong>majorité absolue</strong> au 1<sup>er</sup> tour,
+                            un second tour est organisé. Les deux listes les mieux placées s'affrontent pour désigner
+                            l'équipe qui gouvernera la commune.
+                        </p>
+                        <p class="text-muted small mb-2">
+                            Les autres listes n'ont aucun intérêt stratégique à se maintenir :
+                            <strong>leurs sièges proportionnels sont déjà acquis</strong> et les primes
+                            ne peuvent revenir qu'aux deux finalistes. Naturellement, le second tour devient un duel,
+                            sans règle formelle d'exclusion.
+                        </p>
+                        <p class="text-muted small mb-0 fst-italic border-start border-warning border-2 ps-2">
+                            Nouveauté : le vainqueur doit obtenir la <strong>majorité absolue</strong> des suffrages exprimés —
+                            contrairement au système actuel qui se contente d'une majorité relative.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ÉTAPE 3 -->
+            <div class="row g-0 align-items-center position-relative" style="z-index:1;">
+                <div class="col-lg-5 text-lg-end pe-lg-5">
+                    <div class="glass-card p-4" style="border-top:3px solid #10b981;">
+                        <div class="d-flex align-items-center justify-content-lg-end gap-2 mb-2">
+                            <span class="badge bg-success fw-bold px-2">Étape 3</span>
+                            <h3 class="fs-5 fw-bold mb-0">Attribution des primes</h3>
+                        </div>
+                        <p class="text-muted small mb-2">
+                            <strong class="text-success">Prime majoritaire (40 % des sièges)</strong> → attribuée à la liste
+                            ayant obtenu la <strong>majorité absolue</strong>, que ce soit dès le 1<sup>er</sup> tour ou au 2<sup>nd</sup>.
+                            Si la liste a déjà obtenu ces sièges via la proportionnelle, la prime est considérée comme atteinte
+                            et ne génère pas de sièges supplémentaires.
+                        </p>
+                        <p class="text-muted small mb-3">
+                            <strong style="color:var(--secondary)">Prime minoritaire (10 % des sièges)</strong> → attribuée
+                            à la liste <em>perdante</em> du second tour. Elle compense sa participation au duel
+                            et la consacre comme <strong>leader de l'opposition</strong> avec un poids politique réel,
+                            indépendamment de l'écart de voix au 1<sup>er</sup> tour.
+                        </p>
+                        <div class="p-2 rounded-2 small text-muted" style="background:rgba(245,158,11,0.1);">
+                            <i class="bi bi-arrow-right-circle text-warning me-1"></i>
+                            <strong>Si victoire dès le 1<sup>er</sup> tour</strong> : pas de perdant au 2<sup>nd</sup> tour —
+                            les sièges de la prime minoritaire sont reversés dans la répartition proportionnelle.
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-2 d-none d-lg-flex justify-content-center">
+                    <div class="rounded-circle bg-success d-flex align-items-center justify-content-center text-white fw-bold"
+                        style="width:42px;height:42px;z-index:2;flex-shrink:0;">3</div>
+                </div>
+                <div class="col-lg-5 ps-lg-5 d-none d-lg-flex align-items-center">
+                    <div class="p-4 rounded-3 w-100" style="background:rgba(16,185,129,0.08);">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="small text-muted">Prime majoritaire</span>
+                            <span class="fw-bold text-success fs-5">16 sièges</span>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small text-muted">Prime minoritaire</span>
+                            <span class="fw-bold fs-5" style="color:var(--secondary)">4 sièges</span>
+                        </div>
+                        <hr class="my-3 opacity-25">
+                        <div class="small text-muted fst-italic text-center">40 % et 10 % de 39 sièges<br>(arrondis à l'entier supérieur)</div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /stepper -->
+
+        <!-- Récapitulatif -->
+        <div class="mt-5 p-4 rounded-3" style="background:rgba(13,110,253,0.05);">
+            <p class="small text-muted text-center mb-3 fw-semibold text-uppercase" style="letter-spacing:.07em;">
+                Récapitulatif — conseil de 39 sièges
+            </p>
+            <div class="d-flex flex-wrap justify-content-center align-items-center gap-2 mb-3">
+                <span class="badge bg-primary px-3 py-2" style="font-size:.85rem;">20 sièges — proportionnelle 1<sup>er</sup> tour</span>
+                <span class="text-muted fw-bold">+</span>
+                <span class="badge bg-success px-3 py-2" style="font-size:.85rem;">16 sièges — prime majoritaire</span>
+                <span class="text-muted fw-bold">+</span>
+                <span class="badge px-3 py-2" style="font-size:.85rem;background:var(--secondary);color:#fff;">4 sièges — prime minoritaire</span>
+                <span class="text-muted fw-bold fs-5">=</span>
+                <span class="badge bg-dark px-3 py-2" style="font-size:.85rem;">39 sièges</span>
+            </div>
+            <p class="small text-muted text-center mb-0">
+                <i class="bi bi-info-circle me-1"></i>
+                Dans les communes PLM (Paris, Lyon, Marseille), la prime majoritaire est ramenée à <strong>30 %</strong>. Une prime à 25 %, comme c'est le cas aujourd'hui, ferait peser un risque d'instabilité avec un système basé sur les résultats du 1<sup>er</sup> tour.
+            </p>
+        </div>
+
     </div>
 
     <!-- === OBJECTIONS / FAQ === -->
@@ -412,8 +619,8 @@ const VILLES = [
       {nom:'Bournazel', et:'LUC',  sieges: 11, c:'#f59e0b'},
       {nom:'Knafo',     et:'LEXD', sieges: 10, c:'#92400e'},
     ],
-    analyseAvant:"Grégoire remporte 63 % des sièges avec 38 % des voix. Knafo, à 10 %, n'entre pas au conseil — ses 85 000 électeurs sont sans représentant.",
-    analyseApres:"La majorité reste solide (54 %). Dati devient une opposition pesante. Knafo entre au conseil : 85 000 électeurs enfin représentés.",
+    analyseAvant:"Grégoire remporte 63 % des sièges avec 38 % des voix. Knafo, à 10 %, n'entre pas au conseil à cause de son désistement. Ses électeurs sont privés de représentation.",
+    analyseApres:"La majorité reste solide (54 %). Dati reste l'opposition principale, mais d'autres courants politiques sont représentés au conseil de Paris.",
   },
   {
     id:'lyon', label:'Lyon', slug:'69123',
@@ -429,7 +636,7 @@ const VILLES = [
       {nom:'Dupalais',     et:'LUXD', sieges: 3, c:'#92400e'},
     ],
     analyseAvant:"Duel à 0,6 point d'écart, mais le vainqueur obtient 63 % des sièges. Belouassa-Cherifi (10 %) n'est représentée qu'en fusionnant avec Doucet au 2nd tour.",
-    analyseApres:"Aulas obtient 25 sièges d'opposition réelle malgré sa défaite. LFI et la 4e liste entrent au conseil, reflétant la diversité lyonnaise.",
+    analyseApres:"Doucet conserve une majorité de sièges. Aulas dirige l'opposition avec 25 sièges. LFI n'a pas besoin de \"fusion technique\" pour faire être au conseil sans faire perdre la gauche et RN entre au conseil.",
   },
   {
     id:'toulouse', label:'Toulouse', slug:'31555',
@@ -444,8 +651,8 @@ const VILLES = [
       {nom:'Briançon',    et:'LUG',  sieges: 9, c:'#e05252'},
       {nom:'Leonardelli', et:'LRN',  sieges: 2, c:'#92400e'},
     ],
-    analyseAvant:"Moudenc rafle 77 % des sièges avec 37 % des voix. Briançon (25 %) perd son identité propre dans la fusion. Leonardelli et ses 5 % sont effacés.",
-    analyseApres:"Moudenc garde une majorité absolue (61 %). PS et LFI siègent séparément. Le RN entre pour la première fois, reflet de la réalité électorale.",
+    analyseAvant:"Moudenc rafle 77 % des sièges. Briançon doit se diluer dans la liste de Piquemal pour faire gagner la gauche. Leonardelli et ses 5 % sont effacés car n'a pas pu fusionner.",
+    analyseApres:"Moudenc garde une majorité absolue (61 %) mais réduite. PS et LFI sont élus séparément, et le RN entre au conseil. L'opposition passe de 16 à 27, avec trois sensibilités politiques différentes.",
   },
   {
     id:'bordeaux', label:'Bordeaux', slug:'33063',
@@ -465,8 +672,8 @@ const VILLES = [
       {nom:'Rechagneux', et:'LRN',  sieges: 2, c:'#92400e'},
       {nom:'Poutou',     et:'LEXG', sieges: 2, c:'#ff0000'},
     ],
-    analyseAvant:"Cazenave remporte 75 % des sièges avec seulement 25,6 % des voix. Quatre listes totalisant 41 % des suffrages n'ont aucun élu — un effacement massif.",
-    analyseApres:"Cazenave conserve la majorité (54 %). Six sensibilités politiques représentées au lieu de deux — un conseil à l'image de Bordeaux.",
+    analyseAvant:"Cazenave remporte 75 % des sièges avec à peine 50 % des voix. Quatre listes totalisant 41 % des suffrages n'ont aucun élu — un effacement massif.",
+    analyseApres:"Cazenave conserve la majorité (54 %). Six sensibilités politiques sont représentées au lieu de deux — un conseil plus représentatif.",
   },
   {
     id:'lille', label:'Lille', slug:'59350',
@@ -485,8 +692,8 @@ const VILLES = [
       {nom:'Valet',      et:'LRN',  sieges: 3, c:'#92400e'},
       {nom:'Delemer',    et:'LLR',  sieges: 2, c:'#3b82f6'},
     ],
-    analyseAvant:"Deslandes, fusionnée avec Baly au 2nd tour, obtient 77 % des sièges. Delemer, présente au 1er tour, disparaît complètement du conseil lillois.",
-    analyseApres:"Deslandes garde la majorité absolue (56 %) sans coalition obligatoire. Six listes représentées — un conseil qui reflète la réalité du vote lillois.",
+    analyseAvant:"Deslandes, fusionnée avec Baly au 2nd tour, obtient 77 % des sièges. Delemer, présent au 1er tour, disparaît complètement du conseil lillois.",
+    analyseApres:"Deslandes garde la majorité absolue (56 %) sans avoir à former d'alliance. Six listes représentées — un conseil qui reflète la réalité du vote lillois.",
   },
 ];
 
@@ -629,6 +836,59 @@ function updateToggle(id, mode) {
     .querySelectorAll('button')
     .forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
 }
+
+(function () {
+    let isOpen = false;
+
+    window.toggleSystemeActuel = function () {
+        const panneau = document.getElementById('panneau-systeme-actuel');
+        const btn     = document.getElementById('btn-systeme-actuel');
+
+        if (!isOpen) {
+            panneau.style.overflow   = 'hidden';
+            panneau.style.maxHeight  = '0px';
+            panneau.style.opacity    = '0';
+            panneau.style.display    = 'block';
+
+            panneau.offsetHeight;
+
+            panneau.style.transition = 'max-height .45s cubic-bezier(0.16,1,0.3,1), opacity .35s ease';
+            panneau.style.maxHeight  = panneau.scrollHeight + 'px';
+            panneau.style.opacity    = '1';
+
+            panneau.addEventListener('transitionend', function done(e) {
+                if (e.propertyName !== 'max-height') return;
+                panneau.style.maxHeight  = 'none';
+                panneau.style.overflow   = '';
+                panneau.style.transition = '';
+                panneau.removeEventListener('transitionend', done);
+            });
+
+            btn.innerHTML = '<i class="bi bi-eye-slash me-1"></i> Masquer le système actuel';
+            isOpen = true;
+
+        } else {
+            panneau.style.overflow   = 'hidden';
+            panneau.style.maxHeight  = panneau.scrollHeight + 'px';
+            panneau.offsetHeight;
+
+            panneau.style.transition = 'max-height .35s cubic-bezier(0.4,0,1,1), opacity .25s ease';
+            panneau.style.maxHeight  = '0px';
+            panneau.style.opacity    = '0';
+
+            panneau.addEventListener('transitionend', function done(e) {
+                if (e.propertyName !== 'max-height') return;
+                panneau.style.display    = 'none';
+                panneau.style.transition = '';
+                panneau.removeEventListener('transitionend', done);
+            });
+
+            btn.innerHTML = '<i class="bi bi-eye me-1"></i> Voir comment fonctionne le système actuel';
+            isOpen = false;
+        }
+    };
+})();
+
 
 /* ═══════════════════════════════
    INIT — isInit=true → duration:0

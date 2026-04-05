@@ -227,14 +227,14 @@
 
         <nav class="navbar navbar-expand-lg navbar-light pt-4 fade-in-up">
             <div class="container">
-                <a class="navbar-brand fw-bold fs-4" href="<?= BASE_URL ?>">L'autre<span style="color:var(--primary)">Scrutin</span></a>
+                <a class="navbar-brand fw-bold fs-4" href="<?= BASE_URL ?>">L'Autre <span style="color:var(--primary)">Scrutin</span></a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                     <ul class="navbar-nav align-items-center gap-3">
-                        <li class="nav-item"><a class="nav-link fw-semibold" href="<?= BASE_URL ?>">La Réforme</a></li>
-                        <li class="nav-item"><a class="nav-link fw-semibold" href="<?= BASE_URL ?>simulateur/manuel">Simulateur Manuel</a></li>
+                        <li class="nav-item"><a class="nav-link fw-semibold" href="<?= BASE_URL ?>">Accueil</a></li>
+                        <li class="nav-item"><a class="nav-link fw-semibold" href="<?= BASE_URL ?>simulateur/manuel">Simulateur</a></li>
                         <li class="nav-item">
                             <a class="btn btn-custom btn-sm" href="<?= BASE_URL ?>#recherche">Chercher ma ville</a>
                         </li>
