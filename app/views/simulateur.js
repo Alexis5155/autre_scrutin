@@ -14,10 +14,10 @@ createApp({
                 { id: 'L1', valeurSaisie: 4871, nom: null, vainqueur2nd: false },
                 { id: 'L2', valeurSaisie: 4294, nom: null, vainqueur2nd: true },
                 { id: 'L3', valeurSaisie: 1732, nom: null, vainqueur2nd: false },
-                { id: 'L4', valeurSaisie: 263, nom: null, vainqueur2nd: false },
+                { id: 'L4', valeurSaisie: 263,  nom: null, vainqueur2nd: false },
             ],
             COLORS,
-            nextId: 3,
+            nextId: 5,
             vainqueur2ndTour: null,
             resultats: null,
             drawerOpen: false
@@ -44,7 +44,11 @@ createApp({
                     valeurSaisie: l.voix ?? 0,
                     vainqueur2nd: l.id === imp.winner_id
                 }));
-                this.nextId = nextId;
+                const maxId = imp.listes.reduce((max, l) => {
+                    const num = parseInt(String(l.id).replace('L', '')) || 0;
+                    return Math.max(max, num);
+                }, 0);
+                this.nextId = maxId + 1;
 
                 if (!imp.elu1erTour && imp.winner_id) {
                     this.vainqueur2ndTour = imp.winner_id;
@@ -152,16 +156,16 @@ createApp({
             this.listes.splice(index, 1);
         },
         reinitialiser() {
-            this.parametres      = { sieges: 39, isPLM: false };
-            this.modeSaisie      = 'voix';
-            this.listes          = [
+            this.parametres       = { sieges: 39, isPLM: false };
+            this.modeSaisie       = 'voix';
+            this.listes           = [
                 { id: 'L1', valeurSaisie: 0, nom: null, vainqueur2nd: false },
                 { id: 'L2', valeurSaisie: 0, nom: null, vainqueur2nd: false },
             ];
-            this.nextId          = 3;
+            this.nextId           = 3;   // ← correct ici car seulement L1 et L2
             this.vainqueur2ndTour = null;
-            this.resultats       = null;
-            this.villeImportee   = null;
+            this.resultats        = null;
+            this.villeImportee    = null;
         },
         async lancerSimulation() {
             const listesPourPhp = {};
